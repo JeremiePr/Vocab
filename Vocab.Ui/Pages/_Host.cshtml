@@ -1,0 +1,25 @@
+﻿@page "/"
+@namespace Vocab.Ui.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vocab.Ui</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="_content/MatBlazor/dist/matBlazor.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="Vocab.Ui.styles.css" rel="stylesheet" />
+</head>
+<body>
+
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <script src="_framework/blazor.server.js"></script>
+    <script src="_content/MatBlazor/dist/matBlazor.js"></script>
+</body>
+</html>

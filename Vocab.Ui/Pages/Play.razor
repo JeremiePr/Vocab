@@ -1,0 +1,29 @@
+﻿@page "/play"
+@page "/play/{Arg}"
+
+@inject ICategoryService CategoryService 
+
+<div class="container">
+    @if (!isReadyToPlay)
+    {
+        <PlayCategoryPick></PlayCategoryPick>
+    }
+    else
+    {
+        <PlayWordGame></PlayWordGame>
+    }
+</div>
+
+@code {
+
+    [Parameter] public string Arg { get; set; }
+
+    private bool isReadyToPlay = false;
+    private List<int> categoryIds = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (Arg == "All") isReadyToPlay = true;
+    }
+}

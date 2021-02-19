@@ -1,0 +1,35 @@
+﻿@inject ICategoryService CategoryService
+
+<MatTable Items="categoryItems" Class="mat-elevation-z5" ShowPaging="false" UseSortHeaderRow="true">
+    <MatTableHeader>
+        <th>Title</th>
+        <th>Words count</th>
+        <th></th>
+    </MatTableHeader>
+    <MatTableRow>
+        <td>@context.Category.Title</td>
+        <td>5</td>
+        <td><MatCheckbox @bind-Value="context.IsPicked"></MatCheckbox></td>
+    </MatTableRow>
+</MatTable>
+
+@code {
+
+    private struct CategoryItem
+    {
+        public Category Category { get; set; }
+        public bool IsPicked { get; set; }
+    }
+
+    [Parameter] public EventCallback<List<int>> OnCategoryPickSubmit { get; set; }
+
+    private List<CategoryItem> categoryItems;
+    private string inputSearch;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var categories = await CategoryService.GetAll();
+        categoryItems = categories.Select(x => new CategoryItem { Category = x, IsPicked = false }).ToList();
+    }
+}

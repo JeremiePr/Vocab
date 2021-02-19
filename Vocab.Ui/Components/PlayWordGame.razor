@@ -1,0 +1,17 @@
+﻿@inject IWordService WordService
+
+
+
+@code {
+
+    [Parameter] public List<int> CategoryIds { get; set; }
+
+    private List<Word> words;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        words = await WordService.Get(CategoryIds, string.Empty, string.Empty);
+    }
+
+}

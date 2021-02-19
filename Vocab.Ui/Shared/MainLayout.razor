@@ -1,0 +1,71 @@
+﻿@using MatBlazor
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
+<MatAppBarContainer>
+    <MatAppBar Fixed="true" Style="@barBackgroundStyle">
+        <MatAppBarRow>
+            <MatAppBarSection>
+                <MatIconButton Icon="menu" @onclick="OnMenuClick"></MatIconButton>
+                <MatAppBarTitle>Vocab</MatAppBarTitle>
+            </MatAppBarSection>
+            <MatAppBarSection Align="@MatAppBarSectionAlign.End">
+                <MatIconButton Icon="favorite"></MatIconButton>
+            </MatAppBarSection>
+        </MatAppBarRow>
+    </MatAppBar>
+    <MatAppBarContent>
+    </MatAppBarContent>
+</MatAppBarContainer>
+<MatDrawerContainer Style="width: 100vw; height: auto;">
+    <MatDrawer @bind-Opened="@isDrawerOpen" Mode="@MatDrawerMode.Modal" Style="@drawerBackgroundStyle">
+        <div class="drawer-container">
+            <MatNavItem @onclick='(() => OnDrawerItemClick(""))'>
+                <div class="drawer-item" style="@drawerForegroundStyle">Home</div>
+            </MatNavItem>
+            <MatDivider></MatDivider>
+            <MatNavItem @onclick='(() => OnDrawerItemClick("play"))'>
+                <div class="drawer-item" style="@drawerForegroundStyle">Play</div>
+            </MatNavItem>
+            <MatDivider></MatDivider>
+            <MatNavItem @onclick='(() => OnDrawerItemClick("manage"))'>
+                <div class="drawer-item" style="@drawerForegroundStyle">Manage</div>
+            </MatNavItem>
+            <MatDivider></MatDivider>
+            <MatNavItem @onclick='(() => OnDrawerItemClick("learn"))'>
+                <div class="drawer-item" style="@drawerForegroundStyle">Learn</div>
+            </MatNavItem>
+        </div>
+    </MatDrawer>
+    <MatDrawerContent>
+        <div class="page">
+            <div class="main">
+                <div class="content px-4">
+                    @Body
+                </div>
+            </div>
+        </div>
+    </MatDrawerContent>
+</MatDrawerContainer>
+
+@code {
+
+    private bool isDrawerOpen = false;
+    private List<Category> categories = new List<Category>();
+
+    private string barBackgroundStyle = $"background-color: {AppTheme.Primary}";
+    private string drawerBackgroundStyle = $"background-color: {AppTheme.Primary}";
+    private string drawerForegroundStyle = $"color: {AppTheme.TextOnPrimary}";
+
+    private void OnDrawerItemClick(string route)
+    {
+        isDrawerOpen = false;
+        NavigationManager.NavigateTo(route);
+    }
+
+    private void OnMenuClick()
+    {
+        isDrawerOpen = !isDrawerOpen;
+    }
+
+}
