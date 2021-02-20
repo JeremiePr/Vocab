@@ -1,6 +1,4 @@
-﻿using MatBlazor;
-
-namespace Vocab.Ui.Shared
+﻿namespace Vocab.Ui.Shared
 {
     public static class AppTheme
     {
@@ -14,11 +12,5 @@ namespace Vocab.Ui.Shared
 
         public const string TextOnPrimary = "#ffffff";
         public const string TextOnSecondary = "#ffffff";
-
-        public static readonly MatTheme Theme = new MatTheme
-        {
-            Primary = Primary,
-            Secondary = Secondary
-        };
     }
 }

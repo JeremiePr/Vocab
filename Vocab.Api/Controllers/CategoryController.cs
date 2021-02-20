@@ -52,7 +52,7 @@ namespace Vocab.Api.Controllers
         {
             try
             {
-                var categories = await _service.Get(parentId, inputTitle);
+                var categories = await _service.Get(parentId, inputTitle ?? string.Empty);
                 return new ActionResult<List<Category>>(categories);
             }
             catch (Exception ex)

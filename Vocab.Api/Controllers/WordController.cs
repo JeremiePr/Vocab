@@ -54,6 +54,7 @@ namespace Vocab.Api.Controllers
         {
             try
             {
+                categoryIds ??= string.Empty;
                 var list = categoryIds.Split(",").Select(x => int.Parse(x)).ToList();
                 var word = await _service.GetOneRandomly(list);
                 return new ActionResult<WordVM>(word);
@@ -69,6 +70,9 @@ namespace Vocab.Api.Controllers
         {
             try
             {
+                categoryIds ??= string.Empty;
+                inputKeyword ??= string.Empty;
+                inputTranslation ??= string.Empty;
                 var list = categoryIds.Split(",").Select(x => int.Parse(x)).ToList();
                 var words = await _service.Get(list, inputKeyword, inputTranslation);
                 return new ActionResult<List<WordVM>>(words);

@@ -1,0 +1,24 @@
+﻿.main-container {
+    height: 60vh;
+}
+
+th, td {
+    padding: 10px 20px 10px 20px;
+    height: 80px;
+    line-height: 80px;
+    vertical-align: middle;
+}
+
+td > label {
+}
+
+.validation-container {
+    height: 10vh;
+    width: 100%;
+    text-align: center;
+}
+
+.validation-container > button {
+    margin: 0 auto;
+    width: 150px;
+}

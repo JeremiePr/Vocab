@@ -1,21 +1,70 @@
 ﻿@inject ICategoryService CategoryService
+@inject IJSRuntime JSRuntime;
 
-<MatTable Items="categoryItems" Class="mat-elevation-z5" ShowPaging="false" UseSortHeaderRow="true">
-    <MatTableHeader>
-        <th>Title</th>
-        <th>Words count</th>
-        <th></th>
-    </MatTableHeader>
-    <MatTableRow>
-        <td>@context.Category.Title</td>
-        <td>5</td>
-        <td><MatCheckbox @bind-Value="context.IsPicked"></MatCheckbox></td>
-    </MatTableRow>
-</MatTable>
+<div class="row main-container">
+    <div class="col s8">
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th class="col col-text" style="width: 40%;">Title</th>
+                    <th class="col col-text" style="width: 40%;">Word count</th>
+                    <th class="col" style="width: 20%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in categoryItems)
+                {
+                    @if (IsCategoryItemMatchingFilter(item))
+                    {
+                        <tr>
+                            <td class="col col-text" style="width: 40%;">@item.Category.Title</td>
+                            <td class="col col-text" style="width: 40%;">5</td>
+                            <td class="col col-text" style="width: 20%;">
+                                <label>
+                                    <input type="checkbox" @bind="@item.IsPicked" />
+                                    <span style='@(item.IsPicked ? "" : "color: #00000000;")'>Selected</span>
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col s2"></div>
+    <div class="col s2">
+        <div class="row">
+            <div class="input-field">
+                <input id="input_title" type="text" class="validate" @bind="inputTitle" placeholder="title..." autocomplete="off">
+                <label for="input_title"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row validation-container">
+    <button class="btn waves-effect waves-light" @onclick="OpenPlayValidationModal">Play</button>
+</div>
+
+<div id="modal_play_validation" class="modal modal-fixed-footer" style="width: 500px; height: 400px;">
+    <div class="modal-content">
+        <h4>Play</h4>
+        <p>This is the list of categories you selected:</p>
+        @foreach (var categoryItem in categoryItems.Where(x => x.IsPicked))
+        {
+            <p>@categoryItem.Category.Title</p>
+        }
+    </div>
+    <div class="modal-footer">
+        <a class="modal-close waves-effect waves-red btn-flat">Disagree</a>
+        <a class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+</div>
+
+
 
 @code {
 
-    private struct CategoryItem
+    private class CategoryItem
     {
         public Category Category { get; set; }
         public bool IsPicked { get; set; }
@@ -23,13 +72,30 @@
 
     [Parameter] public EventCallback<List<int>> OnCategoryPickSubmit { get; set; }
 
-    private List<CategoryItem> categoryItems;
-    private string inputSearch;
+    private List<CategoryItem> categoryItems = new List<CategoryItem>();
+    private List<CategoryItem> categoryItemsFiltered = new List<CategoryItem>();
+    private string inputTitle = "";
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         var categories = await CategoryService.GetAll();
         categoryItems = categories.Select(x => new CategoryItem { Category = x, IsPicked = false }).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await JSRuntime.InvokeVoidAsync("initializeModals", new List<string> { "#modal_play_validation" });
+    }
+
+    private async Task OpenPlayValidationModal()
+    {
+        await JSRuntime.InvokeVoidAsync("openModal", "#modal_play_validation");
+    }
+
+    private bool IsCategoryItemMatchingFilter(CategoryItem item)
+    {
+        return item.Category.Title.ToLower().StartsWith(inputTitle.ToLower());
     }
 }
