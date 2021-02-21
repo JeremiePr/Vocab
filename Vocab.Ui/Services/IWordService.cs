@@ -9,7 +9,7 @@ namespace Vocab.Ui.Services
     {
         Task<Word> Create(Word word);
         Task Delete(int id);
-        Task<List<Word>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation);
+        Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation);
         Task<List<Word>> GetAll();
         Task<Word> GetOneById(int id);
         Task<Word> GetOneRandomly(List<int> categoryIds);

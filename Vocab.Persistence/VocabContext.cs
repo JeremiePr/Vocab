@@ -34,20 +34,12 @@ namespace Vocab.Persistence
                 entity.Property(e => e.IsActive)
                     .HasColumnName("IsActive");
 
-                entity.Property(e => e.ParentId)
-                    .HasColumnName("ParentId");
-
                 entity.Property(e => e.Title)
                     .HasColumnName("Title")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("UpdateDate");
-
-                entity.HasOne(e => e.Parent)
-                    .WithMany(e => e.Children)
-                    .HasForeignKey(e => e.ParentId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Word>(entity =>

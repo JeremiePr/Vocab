@@ -19,6 +19,7 @@ namespace Vocab.Persistence.Repositories
         public Task<List<Category>> GetAll()
         {
             return _context.Categories
+                .OrderBy(x => x.Title)
                 .ToListAsync();
         }
 
@@ -28,20 +29,12 @@ namespace Vocab.Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<List<Category>> Get(int? parentId, string inputTitle)
-        {
-            return _context.Categories
-                .Where(x => x.IsActive)
-                .Where(x => !parentId.HasValue || x.ParentId == parentId.Value)
-                .Where(x => x.Title.StartsWith(inputTitle))
-                .ToListAsync();
-        }
-
         public Task<List<Category>> GetByWordId(int wordId)
         {
             return _context.Categories
                 .Where(x => x.IsActive)
                 .Where(x => x.WordCategories.Any(y => y.WordId == wordId))
+                .OrderBy(x => x.Title)
                 .ToListAsync();
         }
 

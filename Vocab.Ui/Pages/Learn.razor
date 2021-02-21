@@ -1,9 +1,21 @@
 ﻿@page "/learn"
 
-<div class="container">
-    <h1>Learn</h1>
-</div>
+@if (isPageLoaded)
+{
+    <div class="container">
+        <h1>Learn</h1>
+    </div>
+}
 
 @code {
+
+    private bool isPageLoaded = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        isPageLoaded = true;
+        StateHasChanged();
+    }
 
 }

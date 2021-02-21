@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Vocab.Application.Contracts.Application;
 using Vocab.Domain.Entities;
+using Vocab.Domain.ViewModels;
 
 namespace Vocab.Api.Controllers
 {
@@ -19,13 +20,13 @@ namespace Vocab.Api.Controllers
             _service = service;
         }
 
-        [HttpGet("All")]
-        public async Task<ActionResult<List<Category>>> GetAll()
+        [HttpGet("")]
+        public async Task<ActionResult<List<CategoryVM>>> Get()
         {
             try
             {
-                var categories = await _service.GetAll();
-                return new ActionResult<List<Category>>(categories);
+                var categories = await _service.GetAllWithWordCount();
+                return new ActionResult<List<CategoryVM>>(categories);
             }
             catch (Exception ex)
             {
@@ -40,20 +41,6 @@ namespace Vocab.Api.Controllers
             {
                 var category = await _service.GetOneById(id);
                 return new ActionResult<Category>(category);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("")]
-        public async Task<ActionResult<List<Category>>> Get(int? parentId, string inputTitle)
-        {
-            try
-            {
-                var categories = await _service.Get(parentId, inputTitle ?? string.Empty);
-                return new ActionResult<List<Category>>(categories);
             }
             catch (Exception ex)
             {

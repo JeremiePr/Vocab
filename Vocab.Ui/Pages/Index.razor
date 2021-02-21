@@ -1,5 +1,21 @@
 ﻿@page "/"
 
-<div class="container">
+@if (isPageLoaded)
+{
+    <div class="main-container">
 
-</div>
+    </div>
+}
+
+@code {
+
+    private bool isPageLoaded = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        isPageLoaded = true;
+        StateHasChanged();
+    }
+
+}

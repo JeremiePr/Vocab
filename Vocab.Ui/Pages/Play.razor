@@ -1,28 +1,53 @@
 ﻿@page "/play"
 @page "/play/{Arg}"
 
-@inject ICategoryService CategoryService 
+@inject ICategoryService CategoryService
 
-<div class="container">
-    @if (!isReadyToPlay)
-    {
-        <PlayCategoryPick></PlayCategoryPick>
-    }
-    else
-    {
-        <PlayWordGame></PlayWordGame>
-    }
-</div>
+@if (isPageLoaded)
+{
+    <div class="container">
+        @if (!hasGameStarted)
+        {
+            <PlayCategoryPick OnCategoryPickSubmit="OnCategoryPickSubmit"></PlayCategoryPick>
+        }
+        else
+        {
+            <PlayWordGame Settings="settings" OnGameEnded="OnGameEnded"></PlayWordGame>
+        }
+    </div>
+}
+
+
+
 
 @code {
 
     [Parameter] public string Arg { get; set; }
 
-    private bool isReadyToPlay = false;
+    private bool isPageLoaded = false;
+    private bool hasGameStarted = false;
+    private GameSettings settings = new GameSettings { CategoryIds = new List<int>(), WordDirection = WordDirections.Forward };
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnAfterRender(bool firstRender)
     {
-        await base.OnInitializedAsync();
-        if (Arg == "All") isReadyToPlay = true;
+        if (!firstRender) return;
+        if (Arg == "Default")
+        {
+            settings = new GameSettings { CategoryIds = new List<int>(), LoopRetry = false, WordDirection = WordDirections.All };
+            hasGameStarted = true;
+        }
+        isPageLoaded = true;
+        StateHasChanged();
+    }
+
+    private void OnCategoryPickSubmit(GameSettings settings)
+    {
+        this.settings = settings;
+        hasGameStarted = true;
+    }
+
+    private void OnGameEnded()
+    {
+        hasGameStarted = false;
     }
 }

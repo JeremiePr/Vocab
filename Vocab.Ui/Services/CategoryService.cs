@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Vocab.Domain.Entities;
+using Vocab.Domain.ViewModels;
 using Vocab.Ui.Common;
 
 namespace Vocab.Ui.Services
@@ -20,19 +21,14 @@ namespace Vocab.Ui.Services
             _apiUrl = appEnvironment.ApiUrl + ApiControllerRoute;
         }
 
-        public Task<List<Category>> GetAll()
+        public Task<List<CategoryVM>> Get()
         {
-            return _http.GetJsonAsync<List<Category>>($"{_apiUrl}/All");
+            return _http.GetJsonAsync<List<CategoryVM>>($"{_apiUrl}");
         }
 
         public Task<Category> GetOneById(int id)
         {
             return _http.GetJsonAsync<Category>($"{_apiUrl}/{id}");
-        }
-
-        public Task<List<Category>> Get(int? parentId, string inputTitle)
-        {
-            return _http.GetJsonAsync<List<Category>>($"{_apiUrl}?parentId={parentId}&inputTitle={inputTitle}");
         }
 
         public Task<Category> Create(Category category)

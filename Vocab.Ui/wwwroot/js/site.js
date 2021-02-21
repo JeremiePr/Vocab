@@ -1,7 +1,12 @@
 ﻿function initializeModals(modalSelectors) {
-    console.log(modalSelectors);
     for (const modalSelector of modalSelectors) {
         $(modalSelector).modal();
+    }
+}
+
+function initializeDropdowns(dropdownSelectors) {
+    for (const dropdownSelector of dropdownSelectors) {
+        $(dropdownSelector).formSelect();
     }
 }
 

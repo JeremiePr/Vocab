@@ -37,9 +37,9 @@ namespace Vocab.Ui.Services
                 $"{_apiUrl}/Random?categoryIds={string.Join(",", categoryIds)}");
         }
 
-        public Task<List<Word>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation)
+        public Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation)
         {
-            return _http.GetJsonAsync<List<Word>>(
+            return _http.GetJsonAsync<List<WordVM>>(
                 $"{_apiUrl}?categoryIds={string.Join(",", categoryIds)}&inputKeyword={inputKeyword}&inputTranslation={inputTranslation}");
         }
 

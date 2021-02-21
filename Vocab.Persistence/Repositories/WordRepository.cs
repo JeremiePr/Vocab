@@ -20,6 +20,7 @@ namespace Vocab.Persistence.Repositories
         public Task<List<Word>> GetAll()
         {
             return _context.Words
+                .OrderBy(x => x.KeyWord)
                 .ToListAsync();
         }
 
@@ -32,11 +33,8 @@ namespace Vocab.Persistence.Repositories
         public async Task<Word> GetOneRandomly(List<int> categoryIds)
         {
             var random = new Random();
-            return await _context.WordCategories
-                .Include(x => x.Word)
-                .Where(x => !categoryIds.Any() || categoryIds.Contains(x.CategoryId))
-                .GroupBy(x => x.Word)
-                .Select(x => x.Key)
+            return await _context.Words
+                .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .OrderBy(x => random.Next())
                 .Take(1)
                 .FirstOrDefaultAsync();
@@ -44,14 +42,19 @@ namespace Vocab.Persistence.Repositories
 
         public Task<List<Word>> Get(List<int> categoryIds, string inputKeyWord, string inputValueWord)
         {
-            return _context.WordCategories
-                .Include(x => x.Word)
-                .Where(x => !categoryIds.Any() || categoryIds.Contains(x.CategoryId))
-                .Where(x => x.Word.KeyWord.StartsWith(inputKeyWord))
-                .Where(x => x.Word.ValueWord.Contains(inputValueWord))
-                .GroupBy(x => x.Word)
-                .Select(x => x.Key)
+            return _context.Words
+                .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
+                .Where(x => x.KeyWord.StartsWith(inputKeyWord))
+                .Where(x => x.ValueWord.Contains(inputValueWord))
+                .OrderBy(x => x.KeyWord)
                 .ToListAsync();
+        }
+
+        public Task<int> GetCount(List<int> categoryIds)
+        {
+            return _context.Words
+                .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
+                .CountAsync();
         }
 
         public async Task<Word> Create(Word word)

@@ -1,64 +1,95 @@
 ﻿@inject ICategoryService CategoryService
-@inject IJSRuntime JSRuntime;
+@inject IJSRuntime JSRuntime
 
-<div class="row main-container">
-    <div class="col s8">
-        <table class="striped">
-            <thead>
-                <tr>
-                    <th class="col col-text" style="width: 40%;">Title</th>
-                    <th class="col col-text" style="width: 40%;">Word count</th>
-                    <th class="col" style="width: 20%;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in categoryItems)
-                {
-                    @if (IsCategoryItemMatchingFilter(item))
+@if (isComponentLoaded)
+{
+    <div class="row main-container">
+        <div class="col s8">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th class="col" style="width: 40%;">Category</th>
+                        <th class="col" style="width: 40%;">Word count</th>
+                        <th class="col" style="width: 20%;"></th>
+                    </tr>
+                </thead>
+                <tbody style="height: 40vh;">
+                    @foreach (var item in categoryItems)
                     {
-                        <tr>
-                            <td class="col col-text" style="width: 40%;">@item.Category.Title</td>
-                            <td class="col col-text" style="width: 40%;">5</td>
-                            <td class="col col-text" style="width: 20%;">
-                                <label>
-                                    <input type="checkbox" @bind="@item.IsPicked" />
-                                    <span style='@(item.IsPicked ? "" : "color: #00000000;")'>Selected</span>
-                                </label>
-                            </td>
-                        </tr>
+                        @if (IsCategoryItemMatchingFilter(item))
+                        {
+                            <tr>
+                                <td class="col" style="width: 40%;">@item.CategoryVM.Category.Title</td>
+                                <td class="col" style="width: 40%;">@item.CategoryVM.WordCount</td>
+                                <td class="col" style="width: 20%;">
+                                    <label>
+                                        <input type="checkbox" @bind="@item.IsPicked" />
+                                        <span style='@(item.IsPicked ? "" : "color: #00000000;")'>Selected</span>
+                                    </label>
+                                </td>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="col s2"></div>
-    <div class="col s2">
-        <div class="row">
-            <div class="input-field">
-                <input id="input_title" type="text" class="validate" @bind="inputTitle" placeholder="title..." autocomplete="off">
-                <label for="input_title"></label>
+                </tbody>
+            </table>
+            <div style="margin: 30px 0 30px 0">
+                <a class="btn-flat waves-effect waves-purple" style="margin: 10px;" @onclick="() => SelectOrDeselectAllCategories(true)">Select all</a>
+                <a class="btn-flat waves-effect waves-purple" style="margin: 10px;" @onclick="() => SelectOrDeselectAllCategories(false)">Deselect all</a>
+            </div>
+        </div>
+        <div class="col s2"></div>
+        <div class="col s2">
+            <div class="row">
+                <div class="input-field">
+                    <input id="input_title" type="text" class="validate" @bind="inputTitle" placeholder="search..." autocomplete="off">
+                    <label for="input_title"></label>
+                </div>
+            </div>
+            <div style="height: 10vh"></div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <select id="dropdown_direction" @bind="direction">
+                        <option value="@((int)WordDirections.Forward)">Forward</option>
+                        <option value="@((int)WordDirections.Backward)">Backward</option>
+                        <option value="@((int)WordDirections.All)">All</option>
+                    </select>
+                    <label>Direction</label>
+                </div>
+            </div>
+            <div class="row">
+                <label style="margin: 0 15px 0 15px;">
+                    <input type="checkbox" @bind="@loopRetry" />
+                    <span>Loop</span>
+                </label>
             </div>
         </div>
     </div>
-</div>
-<div class="row validation-container">
-    <button class="btn waves-effect waves-light" @onclick="OpenPlayValidationModal">Play</button>
-</div>
+    <div class="row validation-container">
+        <button class="btn btn-large waves-effect waves-light" @onclick="OpenPlayValidationModal" disabled="@categoryItems.All(x => !x.IsPicked)">
+            Validate<i class="material-icons right">send</i>
+        </button>
+    </div>
 
-<div id="modal_play_validation" class="modal modal-fixed-footer" style="width: 500px; height: 400px;">
-    <div class="modal-content">
-        <h4>Play</h4>
-        <p>This is the list of categories you selected:</p>
-        @foreach (var categoryItem in categoryItems.Where(x => x.IsPicked))
-        {
-            <p>@categoryItem.Category.Title</p>
-        }
+    <div id="modal_play_validation" class="modal modal-fixed-footer" style="width: 500px; height: 500px;">
+        <div class="modal-content">
+            <h4>Play</h4>
+            <p>Selected categories:</p>
+            <ul class="collection" style="max-height: 280px; overflow-y: auto;">
+                @foreach (var categoryItem in categoryItems.Where(x => x.IsPicked))
+                {
+                    <li class="collection-item">
+                        @categoryItem.CategoryVM.Category.Title
+                        <div class="secondary-content">words: @(categoryItem.CategoryVM.WordCount)</div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-close waves-effect waves-red btn-flat">Back</a>
+            <a class="modal-close waves-effect btn" @onclick="OnPlayClick">Play<i class="material-icons right">send</i></a>
+        </div>
     </div>
-    <div class="modal-footer">
-        <a class="modal-close waves-effect waves-red btn-flat">Disagree</a>
-        <a class="modal-close waves-effect waves-green btn-flat">Agree</a>
-    </div>
-</div>
+}
 
 
 
@@ -66,27 +97,35 @@
 
     private class CategoryItem
     {
-        public Category Category { get; set; }
+        public CategoryVM CategoryVM { get; set; }
         public bool IsPicked { get; set; }
     }
 
-    [Parameter] public EventCallback<List<int>> OnCategoryPickSubmit { get; set; }
+    [Parameter] public EventCallback<GameSettings> OnCategoryPickSubmit { get; set; }
 
+    private bool isComponentLoaded = false;
     private List<CategoryItem> categoryItems = new List<CategoryItem>();
-    private List<CategoryItem> categoryItemsFiltered = new List<CategoryItem>();
     private string inputTitle = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var categories = await CategoryService.GetAll();
-        categoryItems = categories.Select(x => new CategoryItem { Category = x, IsPicked = false }).ToList();
-    }
+    private bool loopRetry;
+    private int direction = (int)WordDirections.Forward;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+        var categories = await CategoryService.Get();
+        categoryItems = categories.Select(x => new CategoryItem { CategoryVM = x, IsPicked = false }).ToList();
+        isComponentLoaded = true;
+        StateHasChanged();
         await JSRuntime.InvokeVoidAsync("initializeModals", new List<string> { "#modal_play_validation" });
+        await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#dropdown_direction" });
+    }
+
+    private void SelectOrDeselectAllCategories(bool isPicked)
+    {
+        foreach (var item in categoryItems)
+        {
+            item.IsPicked = isPicked;
+        }
     }
 
     private async Task OpenPlayValidationModal()
@@ -96,6 +135,17 @@
 
     private bool IsCategoryItemMatchingFilter(CategoryItem item)
     {
-        return item.Category.Title.ToLower().StartsWith(inputTitle.ToLower());
+        return item.CategoryVM.Category.Title.ToLower().StartsWith(inputTitle.ToLower());
+    }
+
+    private async Task OnPlayClick()
+    {
+        var categoryIds = categoryItems.Where(x => x.IsPicked).Select(x => x.CategoryVM.Category.Id).ToList();
+        await OnCategoryPickSubmit.InvokeAsync(new GameSettings
+        {
+            CategoryIds = categoryIds,
+            WordDirection = (WordDirections)direction,
+            LoopRetry = loopRetry
+        });
     }
 }

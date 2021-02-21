@@ -4,12 +4,9 @@
 
 th, td {
     padding: 10px 20px 10px 20px;
-    height: 80px;
-    line-height: 80px;
+    height: 60px;
+    line-height: 60px;
     vertical-align: middle;
-}
-
-td > label {
 }
 
 .validation-container {
@@ -21,4 +18,23 @@ td > label {
 .validation-container > button {
     margin: 0 auto;
     width: 150px;
+}
+
+tbody {
+    display: block;
+    overflow-y: scroll;
+}
+
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+thead {
+    width: calc(100% - 1em);
+}
+
+table {
+    width: 100%;
 }

@@ -2,7 +2,6 @@ create table Category
 (
 	Id int identity not null,
 	Title varchar(50) not null,
-	ParentId int null,
 	IsActive bit not null,
 	CreateDate datetime not null,
 	UpdateDate datetime not null,
@@ -13,12 +12,6 @@ go
 alter table Category
 add constraint UQ_Category_Title
 unique (Title)
-go
-
-alter table Category
-add constraint FK_Category_ParentId
-foreign key (ParentId)
-references Category(Id)
 go
 
 create table Word
