@@ -86,7 +86,10 @@
         </div>
         <div class="modal-footer">
             <a class="modal-close waves-effect waves-purple btn-flat">Back</a>
-            <a class="modal-close waves-effect btn" @onclick="OnPlayClick">Play<i class="material-icons right">send</i></a>
+            <a class="modal-close waves-effect btn" @onclick="OnPlayClick" disabled="@(!CanPlay())">
+                Play
+                <i class="material-icons right">send</i>
+            </a>
         </div>
     </div>
 }
@@ -120,6 +123,10 @@
         await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#dropdown_direction" });
     }
 
+    private bool CanPlay() => categoryItems
+        .Where(x => x.IsPicked)
+        .Sum(x => x.CategoryVM.WordCount) > 0;
+
     private void SelectOrDeselectAllCategories(bool isPicked)
     {
         foreach (var item in categoryItems)
@@ -131,6 +138,7 @@
     private async Task OpenPlayValidationModal()
     {
         await JSRuntime.InvokeVoidAsync("openModal", "#modal_play_validation");
+        StateHasChanged();
     }
 
     private bool IsCategoryItemMatchingFilter(CategoryItem item)
