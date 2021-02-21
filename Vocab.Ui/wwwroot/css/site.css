@@ -6,3 +6,12 @@ body {
     margin: 0;
 }
 
+.dropdown-content {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    backface-visibility: hidden !important;
+}
+
+.modal-content::-webkit-scrollbar {
+    display: none;
+}

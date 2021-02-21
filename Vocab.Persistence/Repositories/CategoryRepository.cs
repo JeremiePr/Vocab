@@ -19,6 +19,7 @@ namespace Vocab.Persistence.Repositories
         public Task<List<Category>> GetAll()
         {
             return _context.Categories
+                .Where(x => x.IsActive)
                 .OrderBy(x => x.Title)
                 .ToListAsync();
         }

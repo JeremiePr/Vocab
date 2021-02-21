@@ -31,7 +31,9 @@
                                     <td class="col" style="width: 30%;">@word.Word.KeyWord</td>
                                     <td class="col" style="width: 30%;">@word.Word.ValueWord</td>
                                     <td class="col" style="width: 30%;">@GetWordCategoriesToString(word)</td>
-                                    <td class="col" style="width: 10%;"><button class="waves-effect waves-light btn-flat">Edit</button></td>
+                                    <td class="col" style="width: 10%;">
+                                        <button class="waves-effect waves-light btn-flat" @onclick="() => wordEditModal.Open(word)">Edit</button>
+                                    </td>
                                 </tr>
                             }
                         }
@@ -56,7 +58,7 @@
                             <div class="col s4">
                                 <div class="input-field">
                                     <select id="word_initial_category" @bind="wordEditInitialCategory">
-                                        <option value="0" disabled selected>Choose your option</option>
+                                        <option value="0" disabled selected>Category</option>
                                         @foreach (var category in categories)
                                         {
                                             <option value="@category.Category.Id">@category.Category.Title</option>
@@ -88,7 +90,9 @@
                                 <tr>
                                     <td class="col" style="width: 40%;">@category.Category.Title</td>
                                     <td class="col" style="width: 40%;">@category.WordCount</td>
-                                    <td class="col" style="width: 20%;"><button class="waves-effect waves-light btn-flat">Edit</button></td>
+                                    <td class="col" style="width: 20%;">
+                                        <button class="waves-effect waves-light btn-flat" @onclick="() => categoryEditModal.Open(category.Category)">Edit</button>
+                                    </td>
                                 </tr>
                             }
                         }
@@ -97,7 +101,6 @@
                 <div style="height: 30px;"></div>
                 <div class="row">
                     <EditForm Model="categoryEdit" OnValidSubmit="OnCategoryAdd">
-                        <DataAnnotationsValidator></DataAnnotationsValidator>
                         <h5>Add a new category</h5>
                         <div class="row">
                             <div class="col s12">
@@ -112,6 +115,8 @@
             </div>
         </div>
     </div>
+    <ManageCategoryEditModal @ref="categoryEditModal" OnCategoryEditSave="OnCategoryEdit" OnCategoryEditDelete="OnCategoryDelete"></ManageCategoryEditModal>
+    <ManageWordEditModal @ref="wordEditModal" Categories="categories" OnWordEditSave="OnWordEdit" OnWordEditDelete="OnWordDelete"></ManageWordEditModal>
 }
 
 
@@ -119,17 +124,18 @@
 
 @code {
 
+    private bool isPageLoaded = false;
     private List<CategoryVM> categories = new List<CategoryVM>();
     private string inputCategoryTitle = "";
     private Category categoryEdit = new Category();
-
-    private bool isPageLoaded = false;
     private List<WordVM> words = new List<WordVM>();
     private string inputWordKey = "";
     private string inputWordValue = "";
     private int inputWordCategory = 0;
     private Word wordEdit = new Word();
-    [Required, Range(1, int.MaxValue)] private int wordEditInitialCategory = 0;
+    private int wordEditInitialCategory = 0;
+    private ManageCategoryEditModal categoryEditModal;
+    private ManageWordEditModal wordEditModal;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -162,8 +168,26 @@
         wordEdit = new Word();
         wordEditInitialCategory = 0;
         words = await WordService.Get(new List<int>(), "", "");
+        categories = await CategoryService.Get();
         StateHasChanged();
         await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category" });
+    }
+
+    private async Task OnWordEdit(WordVM word)
+    {
+        _ = await WordService.Update(word.Word);
+        await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Word.Id, CategoryIds = word.Categories.Select(x => x.Id).ToList() });
+        words = await WordService.Get(new List<int>(), "", "");
+        categories = await CategoryService.Get();
+        StateHasChanged();
+    }
+
+    private async Task OnWordDelete(WordVM word)
+    {
+        await WordService.Delete(word.Word.Id);
+        words = await WordService.Get(new List<int>(), "", "");
+        categories = await CategoryService.Get();
+        StateHasChanged();
     }
 
     private bool IsCategoryMatchingFilter(CategoryVM category)
@@ -175,6 +199,22 @@
     {
         _ = await CategoryService.Create(categoryEdit);
         categoryEdit = new Category();
+        categories = await CategoryService.Get();
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category" });
+    }
+
+    private async Task OnCategoryEdit(Category category)
+    {
+        _ = await CategoryService.Update(category);
+        categories = await CategoryService.Get();
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category" });
+    }
+
+    private async Task OnCategoryDelete(Category category)
+    {
+        await CategoryService.Delete(category.Id);
         categories = await CategoryService.Get();
         StateHasChanged();
         await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category" });

@@ -20,6 +20,7 @@ namespace Vocab.Persistence.Repositories
         public Task<List<Word>> GetAll()
         {
             return _context.Words
+                .Where(x => x.IsActive)
                 .OrderBy(x => x.KeyWord)
                 .ToListAsync();
         }
@@ -34,6 +35,7 @@ namespace Vocab.Persistence.Repositories
         {
             var random = new Random();
             return await _context.Words
+                .Where(x => x.IsActive)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .OrderBy(x => random.Next())
                 .Take(1)
@@ -43,6 +45,7 @@ namespace Vocab.Persistence.Repositories
         public Task<List<Word>> Get(List<int> categoryIds, string inputKeyWord, string inputValueWord)
         {
             return _context.Words
+                .Where(x => x.IsActive)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .Where(x => x.KeyWord.StartsWith(inputKeyWord))
                 .Where(x => x.ValueWord.Contains(inputValueWord))
@@ -53,6 +56,7 @@ namespace Vocab.Persistence.Repositories
         public Task<int> GetCount(List<int> categoryIds)
         {
             return _context.Words
+                .Where(x => x.IsActive)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .CountAsync();
         }
