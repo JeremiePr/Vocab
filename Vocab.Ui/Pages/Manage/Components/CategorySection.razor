@@ -1,0 +1,44 @@
+﻿@if (_isComponentLoaded)
+{
+    <h3>Categories</h3>
+    <div style="height: 20px;"></div>
+    <table class="striped">
+        <thead>
+            <tr>
+                <th class="col" style="width: 40%;">Title</th>
+                <th class="col" style="width: 40%;">Word count</th>
+                <th class="col" style="width: 20%;"></th>
+            </tr>
+        </thead>
+        <tbody style="height: 35vh;">
+            @foreach (var category in _categories)
+            {
+                @if (IsCategoryMatchingFilter(category))
+                {
+                    <tr>
+                        <td class="col" style="width: 40%;">@category.Category.Title</td>
+                        <td class="col" style="width: 40%;">@category.WordCount</td>
+                        <td class="col" style="width: 20%;">
+                            <button class="waves-effect waves-light btn-flat" @onclick="() => _categoryEditModal.Open(category.Category)">Edit</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <div style="height: 30px;"></div>
+    <div class="row">
+        <EditForm Model="_categoryEdit" OnValidSubmit="OnCategoryAdd">
+            <h5>Add a new category</h5>
+            <div class="row">
+                <div class="col s12">
+                    <div class="input-field">
+                        <input placeholder="Title" id="category_title" type="text" class="validate" @bind="_categoryEdit.Title" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-large waves-effect waves-light">Create</button>
+        </EditForm>
+    </div>
+    <CategoryEditModal @ref="_categoryEditModal" OnCategoryEditSave="OnCategoryEdit" OnCategoryEditDelete="OnCategoryDelete"></CategoryEditModal>
+} 

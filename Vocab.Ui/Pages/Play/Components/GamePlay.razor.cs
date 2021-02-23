@@ -14,18 +14,12 @@ namespace Vocab.Ui.Pages.Play.Components
         [Parameter] public GameSettings Settings { get; set; }
         [Parameter] public bool AllCategories { get; set; }
         [Parameter] public EventCallback OnGameEnded { get; set; }
+        [Inject] public IWordService WordService { get; set; }
 
         private bool _isComponentLoaded = false;
         private List<GameItem> _items = new List<GameItem>();
         private int _index = 0;
         private bool _isWordHidden = true;
-
-        private readonly IWordService _wordService;
-
-        public GamePlay(IWordService wordService)
-        {
-            _wordService = wordService;
-        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -40,7 +34,7 @@ namespace Vocab.Ui.Pages.Play.Components
             _index = 0;
             _isWordHidden = true;
 
-            var words = await _wordService.Get(Settings.CategoryIds, string.Empty, string.Empty);
+            var words = await WordService.Get(Settings.CategoryIds, string.Empty, string.Empty);
 
             var collection = Settings.WordDirection switch
             {

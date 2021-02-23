@@ -1,0 +1,63 @@
+﻿@if (_isComponentLoaded)
+{
+    <h3>Words</h3>
+    <div style="height: 20px;"></div>
+    <table class="striped">
+        <thead>
+            <tr>
+                <th class="col" style="width: 30%;">Key</th>
+                <th class="col" style="width: 30%;">Value</th>
+                <th class="col" style="width: 30%;">Categories</th>
+                <th class="col" style="width: 10%;"></th>
+            </tr>
+        </thead>
+        <tbody style="height: 35vh;">
+            @foreach (var word in _words)
+            {
+                @if (IsWordMatchingFilter(word))
+                {
+                    <tr>
+                        <td class="col" style="width: 30%;">@word.Word.KeyWord</td>
+                        <td class="col" style="width: 30%;">@word.Word.ValueWord</td>
+                        <td class="col" style="width: 30%;">@GetWordCategoriesToString(word)</td>
+                        <td class="col" style="width: 10%;">
+                            <button class="waves-effect waves-light btn-flat" @onclick="() => _wordEditModal.Open(word)">Edit</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <div style="height: 30px;"></div>
+    <div class="row">
+        <EditForm Model="_wordEdit" OnValidSubmit="OnWordAdd">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <h5>Add a new word</h5>
+            <div class="row">
+                <div class="col s4">
+                    <div class="input-field">
+                        <input placeholder="Key" id="word_key" type="text" class="validate" @bind="_wordEdit.KeyWord" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col s4">
+                    <div class="input-field">
+                        <input placeholder="Value" id="word_value" type="text" class="validate" @bind="_wordEdit.ValueWord" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col s4">
+                    <div class="input-field">
+                        <select id="word_initial_category" @bind="_wordEditInitialCategory">
+                            <option value="0" disabled selected>Category</option>
+                            @foreach (var category in _categories)
+                            {
+                                <option value="@category.Category.Id">@category.Category.Title</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-large waves-effect waves-light">Create</button>
+        </EditForm>
+    </div>
+    <WordEditModal @ref="_wordEditModal" Categories="_categories" OnWordEditSave="OnWordEdit" OnWordEditDelete="OnWordDelete"></WordEditModal>
+}

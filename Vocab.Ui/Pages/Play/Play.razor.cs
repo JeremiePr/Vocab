@@ -11,7 +11,6 @@ namespace Vocab.Ui.Pages.Play
     {
         [Parameter] public string DefaultFlag { get; set; }
 
-        private bool _isPageLoaded = false;
         private bool _hasGameStarted = false;
         private GameSettings _settings = new GameSettings { CategoryIds = new List<int>(), WordDirection = WordDirections.Forward };
 
@@ -23,7 +22,6 @@ namespace Vocab.Ui.Pages.Play
                 _settings = new GameSettings { CategoryIds = new List<int>(), LoopRetry = false, WordDirection = WordDirections.All };
                 _hasGameStarted = true;
             }
-            _isPageLoaded = true;
             StateHasChanged();
         }
 

@@ -1,13 +1,10 @@
-﻿@if (_isPageLoaded)
-{
-    <div class="container">
-        @if (!_hasGameStarted)
-        {
-            <GameConfiguration OnCategoryPickSubmit="OnCategoryPickSubmit"></GameConfiguration>
-        }
-        else
-        {
-            <GamePlay Settings="_settings" OnGameEnded="OnGameEnded"></GamePlay>
-        }
-    </div>
-}
+﻿<div class="container">
+    @if (!_hasGameStarted)
+    {
+        <GameConfiguration OnCategoryPickSubmit="OnCategoryPickSubmit"></GameConfiguration>
+    }
+    else
+    {
+        <GamePlay Settings="_settings" OnGameEnded="OnGameEnded"></GamePlay>
+    }
+</div>

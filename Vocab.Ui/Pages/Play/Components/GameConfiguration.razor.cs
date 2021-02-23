@@ -12,6 +12,8 @@ namespace Vocab.Ui.Pages.Play.Components
     public partial class GameConfiguration : ComponentBase
     {
         [Parameter] public EventCallback<GameSettings> OnCategoryPickSubmit { get; set; }
+        [Inject] public ICategoryService CategoryService { get; set; }
+        [Inject] public IJSRuntime JSRuntime { get; set; }
 
         private bool _isComponentLoaded = false;
         private List<CategoryItem> _categoryItems = new List<CategoryItem>();
@@ -19,24 +21,15 @@ namespace Vocab.Ui.Pages.Play.Components
         private bool _loopRetry;
         private int _direction = (int)WordDirections.Forward;
 
-        private readonly ICategoryService _categoryService;
-        private readonly IJSRuntime _jsRuntime;
-
-        public GameConfiguration(ICategoryService categoryService, IJSRuntime jsRuntime)
-        {
-            _categoryService = categoryService;
-            _jsRuntime = jsRuntime;
-        }
-
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
-            var categories = await _categoryService.Get();
+            var categories = await CategoryService.Get();
             _categoryItems = categories.Select(x => new CategoryItem { CategoryVM = x, IsPicked = false }).ToList();
             _isComponentLoaded = true;
             StateHasChanged();
-            await _jsRuntime.InvokeVoidAsync("initializeModals", new List<string> { "#modal_play_validation" });
-            await _jsRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#dropdown_direction" });
+            await JSRuntime.InvokeVoidAsync("initializeModals", new List<string> { "#modal_play_validation" });
+            await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#dropdown_direction" });
         }
 
         private bool CanPlay() => _categoryItems
@@ -53,7 +46,7 @@ namespace Vocab.Ui.Pages.Play.Components
 
         private async Task OpenPlayValidationModal()
         {
-            await _jsRuntime.InvokeVoidAsync("openModal", "#modal_play_validation");
+            await JSRuntime.InvokeVoidAsync("openModal", "#modal_play_validation");
             StateHasChanged();
         }
 
