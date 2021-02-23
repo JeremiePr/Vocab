@@ -16,7 +16,7 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private bool _isComponentLoaded = false;
         private List<CategoryVM> _categories = new List<CategoryVM>();
-        private string _inputCategoryTitle = "";
+        private string _inputCategorySearch = "";
         private Category _categoryEdit = new Category();
         private CategoryEditModal _categoryEditModal = null;
 
@@ -32,6 +32,8 @@ namespace Vocab.Ui.Pages.Manage.Components
         public async Task Refresh()
         {
             await LoadCategories();
+            StateHasChanged();
+            await ReloadJavascript();
         }
 
         private async Task LoadCategories()
@@ -41,7 +43,7 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private bool IsCategoryMatchingFilter(CategoryVM category)
         {
-            return category.Category.Title.ToLower().StartsWith(_inputCategoryTitle.ToLower());
+            return category.Category.Title.ToLower().StartsWith(_inputCategorySearch.ToLower());
         }
 
         private async Task OnCategoryAdd()

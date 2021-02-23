@@ -19,9 +19,8 @@ namespace Vocab.Ui.Pages.Manage.Components
         private bool _isComponentLoaded = false;
         private List<WordVM> _words = new List<WordVM>();
         private List<CategoryVM> _categories = new List<CategoryVM>();
-        private string _inputWordKey = "";
-        private string _inputWordValue = "";
-        private int _inputWordCategory = 0;
+        private string _inputWordSearch = "";
+        private int _inputWordSearchCategory = 0;
         private Word _wordEdit = new Word();
         private int _wordEditInitialCategory = 0;
         private WordEditModal _wordEditModal = null;
@@ -40,6 +39,8 @@ namespace Vocab.Ui.Pages.Manage.Components
         {
             await LoadCategories();
             await LoadWords();
+            StateHasChanged();
+            await ReloadJavascript();
         }
 
         private async Task LoadCategories()
@@ -55,9 +56,8 @@ namespace Vocab.Ui.Pages.Manage.Components
         private bool IsWordMatchingFilter(WordVM word)
         {
             return
-                word.Word.KeyWord.ToLower().StartsWith(_inputWordKey.ToLower()) &&
-                word.Word.ValueWord.ToLower().Contains(_inputWordValue.ToLower()) &&
-                (_inputWordCategory == 0 || word.Categories.Any(x => x.Id == _inputWordCategory));
+                word.Word.KeyWord.ToLower().StartsWith(_inputWordSearch.ToLower()) &&
+                (_inputWordSearchCategory == 0 || word.Categories.Any(x => x.Id == _inputWordSearchCategory));
         }
 
         private async Task OnWordAdd()
@@ -90,7 +90,7 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task ReloadJavascript()
         {
-            await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category" });
+            await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#word_initial_category", "#word_search_category" });
         }
 
         private static string GetWordCategoriesToString(WordVM word) => string.Join(", ", word.Categories.Select(x => x.Title));

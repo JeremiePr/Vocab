@@ -1,6 +1,22 @@
 ﻿@if (_isComponentLoaded)
 {
-    <h3>Words</h3>
+    <div class="row">
+        <div class="col s4">
+            <h3>Words</h3>
+        </div>
+        <div class="col s4" style="padding-top: 2em;">
+            <input placeholder="Key search" id="word_search_text" type="text" class="validate" @bind="_inputWordSearch" autocomplete="off">
+        </div>
+        <div class="col s4" style="padding-top: 2em;">
+            <select id="word_search_category" @bind="_inputWordSearchCategory">
+                <option value="0" selected>All categories</option>
+                @foreach (var category in _categories)
+                {
+                    <option value="@category.Category.Id">@category.Category.Title</option>
+                }
+            </select>
+        </div>
+    </div>
     <div style="height: 20px;"></div>
     <table class="striped">
         <thead>
