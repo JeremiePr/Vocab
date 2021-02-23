@@ -1,7 +1,6 @@
-﻿@inject ICategoryService CategoryService
-@inject IJSRuntime JSRuntime
+﻿@namespace Vocab.Ui.Pages.Play.Components
 
-@if (isComponentLoaded)
+@if (_isComponentLoaded)
 {
     <div class="row main-container">
         <div class="col s8">
@@ -14,7 +13,7 @@
                     </tr>
                 </thead>
                 <tbody style="height: 40vh;">
-                    @foreach (var item in categoryItems)
+                    @foreach (var item in _categoryItems)
                     {
                         @if (IsCategoryItemMatchingFilter(item))
                         {
@@ -41,14 +40,14 @@
         <div class="col s2">
             <div class="row">
                 <div class="input-field">
-                    <input id="input_title" type="text" class="validate" @bind="inputTitle" placeholder="search..." autocomplete="off">
+                    <input id="input_title" type="text" class="validate" @bind="_inputTitle" placeholder="search..." autocomplete="off">
                     <label for="input_title"></label>
                 </div>
             </div>
             <div style="height: 10vh"></div>
             <div class="row">
                 <div class="input-field col s12">
-                    <select id="dropdown_direction" @bind="direction">
+                    <select id="dropdown_direction" @bind="_direction">
                         <option value="@((int)WordDirections.Forward)">Forward</option>
                         <option value="@((int)WordDirections.Backward)">Backward</option>
                         <option value="@((int)WordDirections.All)">All</option>
@@ -58,14 +57,14 @@
             </div>
             <div class="row">
                 <label style="margin: 0 15px 0 15px;">
-                    <input type="checkbox" @bind="@loopRetry" />
+                    <input type="checkbox" @bind="@_loopRetry" />
                     <span>Loop</span>
                 </label>
             </div>
         </div>
     </div>
     <div class="row validation-container">
-        <button class="btn btn-large waves-effect waves-light" @onclick="OpenPlayValidationModal" disabled="@categoryItems.All(x => !x.IsPicked)">
+        <button class="btn btn-large waves-effect waves-light" @onclick="OpenPlayValidationModal" disabled="@_categoryItems.All(x => !x.IsPicked)">
             Validate<i class="material-icons right">send</i>
         </button>
     </div>
@@ -75,7 +74,7 @@
             <h4>Play</h4>
             <p>Selected categories:</p>
             <ul class="collection" style="max-height: 280px; overflow-y: auto;">
-                @foreach (var categoryItem in categoryItems.Where(x => x.IsPicked))
+                @foreach (var categoryItem in _categoryItems.Where(x => x.IsPicked))
                 {
                     <li class="collection-item">
                         @categoryItem.CategoryVM.Category.Title
@@ -92,68 +91,4 @@
             </a>
         </div>
     </div>
-}
-
-
-
-@code {
-
-    private class CategoryItem
-    {
-        public CategoryVM CategoryVM { get; set; }
-        public bool IsPicked { get; set; }
-    }
-
-    [Parameter] public EventCallback<GameSettings> OnCategoryPickSubmit { get; set; }
-
-    private bool isComponentLoaded = false;
-    private List<CategoryItem> categoryItems = new List<CategoryItem>();
-    private string inputTitle = "";
-    private bool loopRetry;
-    private int direction = (int)WordDirections.Forward;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender) return;
-        var categories = await CategoryService.Get();
-        categoryItems = categories.Select(x => new CategoryItem { CategoryVM = x, IsPicked = false }).ToList();
-        isComponentLoaded = true;
-        StateHasChanged();
-        await JSRuntime.InvokeVoidAsync("initializeModals", new List<string> { "#modal_play_validation" });
-        await JSRuntime.InvokeVoidAsync("initializeDropdowns", new List<string> { "#dropdown_direction" });
-    }
-
-    private bool CanPlay() => categoryItems
-        .Where(x => x.IsPicked)
-        .Sum(x => x.CategoryVM.WordCount) > 0;
-
-    private void SelectOrDeselectAllCategories(bool isPicked)
-    {
-        foreach (var item in categoryItems)
-        {
-            item.IsPicked = isPicked;
-        }
-    }
-
-    private async Task OpenPlayValidationModal()
-    {
-        await JSRuntime.InvokeVoidAsync("openModal", "#modal_play_validation");
-        StateHasChanged();
-    }
-
-    private bool IsCategoryItemMatchingFilter(CategoryItem item)
-    {
-        return item.CategoryVM.Category.Title.ToLower().StartsWith(inputTitle.ToLower());
-    }
-
-    private async Task OnPlayClick()
-    {
-        var categoryIds = categoryItems.Where(x => x.IsPicked).Select(x => x.CategoryVM.Category.Id).ToList();
-        await OnCategoryPickSubmit.InvokeAsync(new GameSettings
-        {
-            CategoryIds = categoryIds,
-            WordDirection = (WordDirections)direction,
-            LoopRetry = loopRetry
-        });
-    }
 }

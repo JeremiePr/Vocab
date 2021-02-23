@@ -1,6 +1,4 @@
-﻿@page "/"
-
-@if (isPageLoaded)
+﻿@if (_isPageLoaded)
 {
     <div style="width: 30%; margin: 200px 35% 200px 35%; text-align: center">
         <div class="row">
@@ -15,17 +13,4 @@
             </div>
         </div>
     </div>
-}
-
-@code {
-
-    private bool isPageLoaded = false;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (!firstRender) return;
-        isPageLoaded = true;
-        StateHasChanged();
-    }
-
 }

@@ -1,0 +1,27 @@
+﻿@namespace Vocab.Ui.Pages.Play.Components
+
+@if (_isComponentLoaded)
+{
+    <div class="main-container">
+        @if (_items.Any() && _index < _items.Count())
+        {
+            <div class="row">
+                <h3>@_items[_index].Question</h3>
+            </div>
+            <div class="row" style="height: 80px;">
+                @if (_isWordHidden)
+                {
+                    <button class="btn-flat waves-effect waves-purple" @onclick="() => _isWordHidden = false">Reveal</button>
+                }
+                else
+                {
+                    <h5>@_items[_index].Answer</h5>
+                }
+            </div>
+            <div style="height: 20px;"></div>
+            <div class="row">
+                <button class="btn btn-large waves-effect waves-light" @onclick="OnNextClick">Next<i class="material-icons right">navigate_next</i></button>
+            </div>
+        }
+    </div>
+}

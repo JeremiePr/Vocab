@@ -1,5 +1,4 @@
-﻿@inject NavigationManager NavigationManager
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 <nav style="padding: 0 15px 0 15px;">
     <div class="nav-wrapper">
@@ -19,25 +18,3 @@
         </div>
     </div>
 </div>
-
-@code {
-
-    private bool isDrawerOpen = false;
-    private List<Category> categories = new List<Category>();
-
-    private string barBackgroundStyle = $"background-color: {AppTheme.Primary}";
-    private string drawerBackgroundStyle = $"background-color: {AppTheme.Primary}";
-    private string drawerForegroundStyle = $"color: {AppTheme.TextOnPrimary}";
-
-    private void OnDrawerItemClick(string route)
-    {
-        isDrawerOpen = false;
-        NavigationManager.NavigateTo(route);
-    }
-
-    private void OnMenuClick()
-    {
-        isDrawerOpen = !isDrawerOpen;
-    }
-
-}

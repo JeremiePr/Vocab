@@ -1,0 +1,20 @@
+﻿@if (_isComponentLoaded)
+{
+    <div id="modal_category_edit" class="modal modal-fixed-footer" style="width: 500px; height: 350px;">
+        <EditForm Model="_category" OnValidSubmit="OnSaveClick">
+            <div class="modal-content">
+                <h4>Edit category</h4>
+                <div style="height: 40px;"></div>
+                <label>Title</label>
+                <div class="input-field col s6">
+                    <input placeholder="Title" id="category_title" type="text" class="validate" @bind="_category.Title">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close waves-effect waves-purple btn-flat">Back</button>
+                <button class="modal-close waves-effect waves-ripple btn red" @onclick="OnDeleteClick">Delete<i class="material-icons right">delete</i></button>
+                <button class="modal-close waves-effect btn" type="submit">Save<i class="material-icons right">save</i></button>
+            </div>
+        </EditForm>
+    </div>
+}

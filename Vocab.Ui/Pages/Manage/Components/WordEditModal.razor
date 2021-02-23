@@ -1,0 +1,41 @@
+﻿@if (_isComponentLoaded)
+{
+    <div id="modal_word_edit" class="modal modal-fixed-footer" style="width: 500px; height: 600px;">
+        <EditForm Model="_word" OnValidSubmit="OnSaveClick">
+            <div class="modal-content">
+                <h4>Edit word</h4>
+                <div style="height: 40px;"></div>
+                <label>Key</label>
+                <div class="input-field">
+                    <input placeholder="Key" id="word_keyword" type="text" class="validate" @bind="_word.Word.KeyWord">
+                </div>
+                <label>Value</label>
+                <div class="input-field">
+                    <input placeholder="Value" id="word_valueword" type="text" class="validate" @bind="_word.Word.ValueWord">
+                </div>
+                <label>Categories</label>
+                <div style="height: 16px;"></div>
+                <select id="word_category" @bind="WordCategoryId" style="max-height: 400px; overflow-y: auto">
+                    <option value="0" disabled selected>Add category</option>
+                    @foreach (var category in Categories)
+                    {
+                        <option value="@category.Category.Id">@category.Category.Title</option>
+                    }
+                </select>
+                <div style="height: 10px;"></div>
+                @foreach (var category in _word.Categories)
+                {
+                    <div class="chip">
+                        @category.Title
+                        <i class="chip-category-close-btn material-icons" @onclick="() => OnCategoryRemoveClick(category)">close</i>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close waves-effect waves-purple btn-flat">Back</button>
+                <button class="modal-close waves-effect waves-ripple btn red" @onclick="OnDeleteClick">Delete<i class="material-icons right">delete</i></button>
+                <button class="modal-close waves-effect btn" type="submit">Save<i class="material-icons right">save</i></button>
+            </div>
+        </EditForm>
+    </div>
+}
