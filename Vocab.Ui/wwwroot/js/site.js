@@ -13,3 +13,7 @@ function initializeDropdowns(dropdownSelectors) {
 function openModal(modalSelector) {
     $(modalSelector).modal("open");
 }
+
+function focusElement(elementSelector) {
+    setTimeout(() => $(elementSelector).focus(), 1);
+}

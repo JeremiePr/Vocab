@@ -1,3 +1,5 @@
-﻿.container {
-
+﻿.btn-large {
+    width: 200px;
+    height: 60px;
+    background-color: #ee6e73;
 }

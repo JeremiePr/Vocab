@@ -73,7 +73,9 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-large waves-effect waves-light">Create</button>
+            <a class="btn btn-large waves-effect waves-light" style="float: right; background-color: #ee6e73;" @onclick="() => _wordAddBulkModal.Open()">Add multiple words</a>
         </EditForm>
     </div>
     <WordEditModal @ref="_wordEditModal" Categories="_categories" OnWordEditSave="OnWordEdit" OnWordEditDelete="OnWordDelete"></WordEditModal>
+    <WordAddBulkModal @ref="_wordAddBulkModal" Categories="_categories" OnModalSaveClick="OnWordBulkAdd"></WordAddBulkModal>
 }

@@ -48,6 +48,7 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task OnCategoryAdd()
         {
+            if (string.IsNullOrWhiteSpace(_categoryEdit.Title)) return;
             _ = await CategoryService.Create(_categoryEdit);
             _categoryEdit = new Category();
             await LoadCategories();

@@ -24,6 +24,7 @@ namespace Vocab.Ui.Pages.Manage.Components
         private Word _wordEdit = new Word();
         private int _wordEditInitialCategory = 0;
         private WordEditModal _wordEditModal = null;
+        private WordAddBulkModal _wordAddBulkModal = null;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -62,10 +63,24 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task OnWordAdd()
         {
+            if (string.IsNullOrWhiteSpace(_wordEdit.KeyWord) || string.IsNullOrWhiteSpace(_wordEdit.ValueWord) || _wordEditInitialCategory == 0) return;
             var word = await WordService.Create(_wordEdit);
             await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = new List<int> { _wordEditInitialCategory } });
             _wordEdit = new Word();
             _wordEditInitialCategory = 0;
+            await LoadWords();
+            await OnCategoryReloadRequest.InvokeAsync();
+            StateHasChanged();
+        }
+
+        private async Task OnWordBulkAdd(List<WordVM> words)
+        {
+            foreach (var w in words)
+            {
+                var categoryIds = w.Categories.Select(x => x.Id).ToList();
+                var word = await WordService.Create(w.Word);
+                await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = categoryIds });
+            }
             await LoadWords();
             await OnCategoryReloadRequest.InvokeAsync();
             StateHasChanged();
