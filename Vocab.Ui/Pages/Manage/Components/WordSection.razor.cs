@@ -77,6 +77,7 @@ namespace Vocab.Ui.Pages.Manage.Components
         {
             foreach (var w in words)
             {
+                w.Word.Id = 0;
                 var categoryIds = w.Categories.Select(x => x.Id).ToList();
                 var word = await WordService.Create(w.Word);
                 await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = categoryIds });
