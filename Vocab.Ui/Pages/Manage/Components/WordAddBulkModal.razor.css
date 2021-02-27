@@ -4,6 +4,11 @@
     height: 65%;
 }
 
+.list-categories {
+    overflow-y: scroll;
+    height: 100%;
+}
+
 .list-content::-webkit-scrollbar {
     display: none;
 }
