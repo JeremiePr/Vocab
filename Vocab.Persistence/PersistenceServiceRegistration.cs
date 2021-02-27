@@ -12,8 +12,8 @@ namespace Vocab.Persistence
         {
             services.AddDbContext<VocabContext>(options => options.UseSqlServer(configuration.GetConnectionString("VocabConnectionString")));
 
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<IWordRepository, WordRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IWordRepository, WordRepository>();
 
             return services;
         }

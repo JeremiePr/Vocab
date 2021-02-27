@@ -8,8 +8,8 @@ namespace Vocab.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IWordService, WordService>();
+            services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<IWordService, WordService>();
 
             return services;
         }
