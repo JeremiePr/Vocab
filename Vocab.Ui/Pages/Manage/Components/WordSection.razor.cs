@@ -21,6 +21,7 @@ namespace Vocab.Ui.Pages.Manage.Components
         private List<CategoryVM> _categories = new List<CategoryVM>();
         private string _inputWordSearch = "";
         private int _inputWordSearchCategory = 0;
+        private bool _inputWordSearchIsPinned = false;
         private Word _wordEdit = new Word();
         private int _wordEditInitialCategory = 0;
         private WordEditModal _wordEditModal = null;
@@ -51,14 +52,22 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task LoadWords()
         {
-            _words = await WordService.Get(new List<int>(), "", "");
+            _words = await WordService.Get(new List<int>(), "", "", onlyPinned: false);
         }
 
         private bool IsWordMatchingFilter(WordVM word)
         {
             return
                 word.Word.KeyWord.ToLower().StartsWith(_inputWordSearch.ToLower()) &&
-                (_inputWordSearchCategory == 0 || word.Categories.Any(x => x.Id == _inputWordSearchCategory));
+                (_inputWordSearchCategory == 0 || word.Categories.Any(x => x.Id == _inputWordSearchCategory)) &&
+                (!_inputWordSearchIsPinned || word.Word.IsPinned);
+        }
+
+        private async Task OnPinClick(Word word)
+        {
+            word.IsPinned = !word.IsPinned;
+            _ = await WordService.Update(word);
+            StateHasChanged();
         }
 
         private async Task OnWordAdd()

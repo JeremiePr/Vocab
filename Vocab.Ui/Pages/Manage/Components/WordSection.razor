@@ -1,13 +1,13 @@
 ﻿@if (_isComponentLoaded)
 {
     <div class="row">
-        <div class="col s4">
+        <div class="col s3">
             <h3>Words</h3>
         </div>
-        <div class="col s4" style="padding-top: 2em;">
+        <div class="col s3" style="padding-top: 2em;">
             <input placeholder="Key search" id="word_search_text" type="text" class="validate" @bind="_inputWordSearch" autocomplete="off" spellcheck="false">
         </div>
-        <div class="col s4" style="padding-top: 2em;">
+        <div class="col s3" style="padding-top: 2em;">
             <select id="word_search_category" @bind="_inputWordSearchCategory">
                 <option value="0" selected>All categories</option>
                 @foreach (var category in _categories)
@@ -16,14 +16,22 @@
                 }
             </select>
         </div>
+        <div class="col s1"></div>
+        <div class="col s2" style="padding-top: 3em;">
+            <label>
+                <input type="checkbox" @bind="_inputWordSearchIsPinned" />
+                <span>Only pinned</span>
+            </label>
+        </div>
     </div>
     <div style="height: 20px;"></div>
     <table class="striped">
         <thead>
             <tr>
-                <th class="col" style="width: 30%;">Key</th>
+                <th class="col" style="width: 25%;">Key</th>
                 <th class="col" style="width: 30%;">Value</th>
-                <th class="col" style="width: 30%;">Categories</th>
+                <th class="col" style="width: 25%;">Categories</th>
+                <th class="col" style="width: 10%;">Pinned</th>
                 <th class="col" style="width: 10%;"></th>
             </tr>
         </thead>
@@ -33,9 +41,22 @@
                 @if (IsWordMatchingFilter(word))
                 {
                     <tr>
-                        <td class="col table-line" style="width: 30%;">@word.Word.KeyWord</td>
+                        <td class="col table-line" style="width: 25%;">@word.Word.KeyWord</td>
                         <td class="col table-line" style="width: 30%;">@word.Word.ValueWord</td>
-                        <td class="col table-line" style="width: 30%;">@GetWordCategoriesToString(word)</td>
+                        <td class="col table-line" style="width: 25%;">@GetWordCategoriesToString(word)</td>
+                        <td class="col" style="width: 10%;">
+                            <label>
+                                @if (word.Word.IsPinned)
+                                {
+                                    <input type="checkbox" checked="checked" />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" />
+                                }
+                                <span style="color: #00000000;" @onclick="() => OnPinClick(word.Word)">_</span>
+                            </label>
+                        </td>
                         <td class="col" style="width: 10%;">
                             <button class="waves-effect waves-light btn-flat" @onclick="() => _wordEditModal.Open(word)">Edit</button>
                         </td>

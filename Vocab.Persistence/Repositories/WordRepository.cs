@@ -31,21 +31,23 @@ namespace Vocab.Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Word> GetOneRandomly(List<int> categoryIds)
+        public async Task<Word> GetOneRandomly(List<int> categoryIds, bool onlyPinned)
         {
             var random = new Random();
             return await _context.Words
                 .Where(x => x.IsActive)
+                .Where(x => !onlyPinned || x.IsPinned)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .OrderBy(x => random.Next())
                 .Take(1)
                 .FirstOrDefaultAsync();
         }
 
-        public Task<List<Word>> Get(List<int> categoryIds, string inputKeyWord, string inputValueWord)
+        public Task<List<Word>> Get(List<int> categoryIds, string inputKeyWord, string inputValueWord, bool onlyPinned)
         {
             return _context.Words
                 .Where(x => x.IsActive)
+                .Where(x => !onlyPinned || x.IsPinned)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .Where(x => x.KeyWord.StartsWith(inputKeyWord))
                 .Where(x => x.ValueWord.Contains(inputValueWord))
@@ -53,10 +55,11 @@ namespace Vocab.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public Task<int> GetCount(List<int> categoryIds)
+        public Task<int> GetCount(List<int> categoryIds, bool onlyPinned)
         {
             return _context.Words
                 .Where(x => x.IsActive)
+                .Where(x => !onlyPinned || x.IsPinned)
                 .Where(x => !categoryIds.Any() || x.WordCategories.Any(y => categoryIds.Contains(y.CategoryId)))
                 .CountAsync();
         }
@@ -73,6 +76,7 @@ namespace Vocab.Persistence.Repositories
             _context.Words.Attach(word);
             _context.Entry(word).Property(x => x.KeyWord).IsModified = true;
             _context.Entry(word).Property(x => x.ValueWord).IsModified = true;
+            _context.Entry(word).Property(x => x.IsPinned).IsModified = true;
             await _context.SaveChangesAsync();
             return word;
         }
@@ -96,9 +100,10 @@ namespace Vocab.Persistence.Repositories
             {
                 _context.WordCategories.Remove(relation);
             }
-            var word = new Word { Id = wordId, IsActive = false };
+            var word = new Word { Id = wordId, IsActive = false, IsPinned = false };
             _context.Words.Attach(word);
             _context.Entry(word).Property(x => x.IsActive).IsModified = true;
+            _context.Entry(word).Property(x => x.IsPinned).IsModified = true;
             await _context.SaveChangesAsync();
         }
     }

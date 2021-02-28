@@ -26,21 +26,21 @@ namespace Vocab.Ui.Services
             return _http.GetJsonAsync<List<Word>>($"{_apiUrl}/All");
         }
 
-        public Task<Word> GetOneById(int id)
+        public Task<WordVM> GetOneById(int id)
         {
-            return _http.GetJsonAsync<Word>($"{_apiUrl}/{id}");
+            return _http.GetJsonAsync<WordVM>($"{_apiUrl}/{id}");
         }
 
-        public Task<Word> GetOneRandomly(List<int> categoryIds)
+        public Task<Word> GetOneRandomly(List<int> categoryIds, bool onlyPinned)
         {
             return _http.GetJsonAsync<Word>(
-                $"{_apiUrl}/Random?categoryIds={string.Join(",", categoryIds)}");
+                $"{_apiUrl}/Random?categoryIds={string.Join(",", categoryIds)}&onlyPinned={onlyPinned}");
         }
 
-        public Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation)
+        public Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation, bool onlyPinned)
         {
             return _http.GetJsonAsync<List<WordVM>>(
-                $"{_apiUrl}?categoryIds={string.Join(",", categoryIds)}&inputKeyword={inputKeyword}&inputTranslation={inputTranslation}");
+                $"{_apiUrl}?categoryIds={string.Join(",", categoryIds)}&inputKeyword={inputKeyword}&inputTranslation={inputTranslation}&onlyPinned={onlyPinned}");
         }
 
         public Task<Word> Create(Word word)

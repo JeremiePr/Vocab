@@ -9,10 +9,10 @@ namespace Vocab.Ui.Services
     {
         Task<Word> Create(Word word);
         Task Delete(int id);
-        Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation);
+        Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation, bool onlyPinned);
         Task<List<Word>> GetAll();
-        Task<Word> GetOneById(int id);
-        Task<Word> GetOneRandomly(List<int> categoryIds);
+        Task<WordVM> GetOneById(int id);
+        Task<Word> GetOneRandomly(List<int> categoryIds, bool onlyPinned);
         Task<Word> Update(Word word);
         Task UpdateCategories(WordCategoryVM wordCategoryVM);
     }

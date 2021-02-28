@@ -1,3 +1,5 @@
+-- CREATION --
+
 create table Category
 (
 	Id int identity not null,
@@ -45,4 +47,12 @@ alter table WordCategory
 add constraint FK_WordCategory_CategoryId
 foreign key (CategoryId)
 references Category(Id)
+go
+
+-- UPDATE --
+
+alter table Word
+add IsPinned bit not null
+constraint DF_Word_IsPinned
+default 0
 go

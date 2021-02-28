@@ -18,7 +18,8 @@ namespace Vocab.Ui.Pages.Play.Components
         private bool _isComponentLoaded = false;
         private List<CategoryItem> _categoryItems = new List<CategoryItem>();
         private string _inputTitle = "";
-        private bool _loopRetry;
+        private bool _loopRetry = false;
+        private bool _onlyPinned = true;
         private int _direction = (int)WordDirections.Forward;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -62,7 +63,8 @@ namespace Vocab.Ui.Pages.Play.Components
             {
                 CategoryIds = categoryIds,
                 WordDirection = (WordDirections)_direction,
-                LoopRetry = _loopRetry
+                LoopRetry = _loopRetry,
+                OnlyPinned = _onlyPinned
             });
         }
     }

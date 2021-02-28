@@ -8,6 +8,7 @@ namespace Vocab.Domain.Entities
         public int Id { get; set; }
         public string KeyWord { get; set; }
         public string ValueWord { get; set; }
+        public bool IsPinned { get; set; }
         public ICollection<WordCategory> WordCategories { get; set; }
     }
 }

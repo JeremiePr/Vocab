@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Vocab.Domain.Entities;
+using Vocab.Domain.ViewModels;
 using Vocab.Ui.Models;
 using Vocab.Ui.Models.Enums;
 using Vocab.Ui.Services;
@@ -35,14 +37,17 @@ namespace Vocab.Ui.Pages.Play.Components
             _index = 0;
             _isWordHidden = true;
 
-            var words = await WordService.Get(Settings.CategoryIds, string.Empty, string.Empty);
+            var words = await WordService.Get(Settings.CategoryIds, string.Empty, string.Empty, onlyPinned: Settings.OnlyPinned);
+
+            if (!words.Any())
+                await OnListEnding();
 
             var collection = Settings.WordDirection switch
             {
-                WordDirections.Forward => words.Select(x => new GameItem { Question = x.Word.KeyWord, Answer = x.Word.ValueWord }),
-                WordDirections.Backward => words.Select(x => new GameItem { Question = x.Word.ValueWord, Answer = x.Word.KeyWord }),
-                WordDirections.All => words.Select(x => new GameItem { Question = x.Word.KeyWord, Answer = x.Word.ValueWord })
-                    .Concat(words.Select(x => new GameItem { Question = x.Word.ValueWord, Answer = x.Word.KeyWord })),
+                WordDirections.Forward => words.Select(x => new GameItem { WordId = x.Word.Id, Question = x.Word.KeyWord, Answer = x.Word.ValueWord, IsPinned = x.Word.IsPinned }),
+                WordDirections.Backward => words.Select(x => new GameItem { WordId = x.Word.Id, Question = x.Word.ValueWord, Answer = x.Word.KeyWord, IsPinned = x.Word.IsPinned }),
+                WordDirections.All => words.Select(x => new GameItem { WordId = x.Word.Id, Question = x.Word.KeyWord, Answer = x.Word.ValueWord, IsPinned = x.Word.IsPinned })
+                    .Concat(words.Select(x => new GameItem { WordId = x.Word.Id, Question = x.Word.ValueWord, Answer = x.Word.KeyWord, IsPinned = x.Word.IsPinned })),
                 _ => throw new Exception($"Expected a valid value from type '{nameof(WordDirections)}'")
             };
 
@@ -55,7 +60,7 @@ namespace Vocab.Ui.Pages.Play.Components
         {
             _index++;
             _isWordHidden = true;
-            if (_index == _items.Count())
+            if (_index == _items.Count)
             {
                 await OnListEnding();
             }
@@ -73,6 +78,15 @@ namespace Vocab.Ui.Pages.Play.Components
             {
                 await OnGameEnded.InvokeAsync();
             }
+        }
+
+        private async Task OnPinClick(int wordId)
+        {
+            var word = (await WordService.GetOneById(wordId)).Word;
+            word.IsPinned = !word.IsPinned;
+            _ = await WordService.Update(word);
+            _items[_index].IsPinned = word.IsPinned;
+            StateHasChanged();
         }
     }
 }

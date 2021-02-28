@@ -1,25 +1,42 @@
 ﻿@if (_isComponentLoaded)
 {
-    <div class="main-container">
-        @if (_items.Any() && _index < _items.Count())
-        {
-            <div class="row">
-                <h3>@_items[_index].Question</h3>
-            </div>
-            <div class="row" style="height: 80px;">
-                @if (_isWordHidden)
+<div class="main-container">
+    @if (_items.Any() && _index < _items.Count())
+    {
+        <div class="row">
+            <h3>@_items[_index].Question</h3>
+        </div>
+        <div class="row" style="height: 80px;">
+            @if (_isWordHidden)
+            {
+                <button class="btn-flat waves-effect waves-purple" @onclick="() => _isWordHidden = false">Reveal</button>
+            }
+            else
+            {
+                <h5>@_items[_index].Answer</h5>
+            }
+        </div>
+        <div class="row">
+            <label style="margin: 0 15px 0 15px;">
+                @if (_items[_index].IsPinned)
                 {
-                    <button class="btn-flat waves-effect waves-purple" @onclick="() => _isWordHidden = false">Reveal</button>
+                    <input type="checkbox" checked="checked" />
                 }
                 else
                 {
-                    <h5>@_items[_index].Answer</h5>
+                    <input type="checkbox" />
                 }
-            </div>
-            <div style="height: 20px;"></div>
-            <div class="row">
-                <button class="btn btn-large waves-effect waves-light" @onclick="OnNextClick">Next<i class="material-icons right">navigate_next</i></button>
-            </div>
-        }
-    </div>
+                <span @onclick="() => OnPinClick(_items[_index].WordId)">Pinned</span>
+            </label>
+        </div>
+        <div style="height: 20px;"></div>
+        <div class="row">
+            <button class="btn btn-large waves-effect waves-light" @onclick="OnNextClick">Next<i class="material-icons right">navigate_next</i></button>
+        </div>
+        <div style="height: 30px;"></div>
+        <div class="row">
+            <button class="btn-flat waves-effect waves-red" @onclick="OnGameEnded">Close<i class="material-icons right">close</i></button>
+        </div>
+    }
+</div>
 }

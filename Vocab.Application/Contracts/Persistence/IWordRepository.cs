@@ -8,9 +8,9 @@ namespace Vocab.Application.Contracts.Persistence
     {
         Task<List<Word>> GetAll();
         Task<Word> GetOneById(int id);
-        Task<Word> GetOneRandomly(List<int> categoryIds);
-        Task<List<Word>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation);
-        Task<int> GetCount(List<int> categoryIds);
+        Task<Word> GetOneRandomly(List<int> categoryIds, bool onlyPinned);
+        Task<List<Word>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation, bool onlyPinned);
+        Task<int> GetCount(List<int> categoryIds, bool onlyPinned);
         Task<Word> Create(Word word);
         Task<Word> Update(Word word);
         Task UpdateCategories(int id, List<int> categoryIds);

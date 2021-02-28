@@ -36,17 +36,17 @@ namespace Vocab.Application.Services
             return new WordVM { Word = word, Categories = categories };
         }
 
-        public async Task<WordVM> GetOneRandomly(List<int> categoryIds)
+        public async Task<WordVM> GetOneRandomly(List<int> categoryIds, bool onlyPinned)
         {
-            var word = await _wordRepository.GetOneRandomly(categoryIds);
+            var word = await _wordRepository.GetOneRandomly(categoryIds, onlyPinned);
             var categories = await _categoryRepository.GetByWordId(word?.Id ?? 0);
             return new WordVM { Word = word, Categories = categories };
         }
 
-        public async Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation)
+        public async Task<List<WordVM>> Get(List<int> categoryIds, string inputKeyword, string inputTranslation, bool onlyPinned)
         {
             var vms = new List<WordVM>();
-            foreach (var word in await _wordRepository.Get(categoryIds, inputKeyword, inputTranslation))
+            foreach (var word in await _wordRepository.Get(categoryIds, inputKeyword, inputTranslation, onlyPinned))
             {
                 var categories = await _categoryRepository.GetByWordId(word.Id);
                 vms.Add(new WordVM { Word = word, Categories = categories });

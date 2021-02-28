@@ -6,5 +6,6 @@ namespace Vocab.Domain.ViewModels
     {
         public Category Category { get; set; }
         public int WordCount { get; set; }
+        public int WordPinnedCount { get; set; }
     }
 }

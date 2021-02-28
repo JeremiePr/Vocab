@@ -24,8 +24,9 @@ namespace Vocab.Application.Services
             var items = new List<CategoryVM>();
             foreach (var category in categories)
             {
-                var wordCount = await _wordRepository.GetCount(new List<int> { category.Id });
-                items.Add(new CategoryVM { Category = category, WordCount = wordCount });
+                var wordCount = await _wordRepository.GetCount(new List<int> { category.Id }, onlyPinned: false);
+                var wordPinnedCount = await _wordRepository.GetCount(new List<int> { category.Id }, onlyPinned: true);
+                items.Add(new CategoryVM { Category = category, WordCount = wordCount, WordPinnedCount = wordPinnedCount });
             }
             return items;
         }

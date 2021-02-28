@@ -57,6 +57,9 @@ namespace Vocab.Persistence
                 entity.Property(e => e.IsActive)
                     .HasColumnName("IsActive");
 
+                entity.Property(e => e.IsPinned)
+                    .HasColumnName("IsPinned");
+
                 entity.Property(e => e.KeyWord)
                    .HasColumnName("KeyWord")
                    .HasMaxLength(10);

@@ -50,13 +50,13 @@ namespace Vocab.Api.Controllers
         }
 
         [HttpGet("Random")]
-        public async Task<ActionResult<WordVM>> GetOneRandomly(string categoryIds)
+        public async Task<ActionResult<WordVM>> GetOneRandomly(string categoryIds, bool? onlyPinned)
         {
             try
             {
                 categoryIds ??= string.Empty;
                 var list = categoryIds.Split(",").Where(x => int.TryParse(x, out _)).Select(x => int.Parse(x)).ToList();
-                var word = await _service.GetOneRandomly(list);
+                var word = await _service.GetOneRandomly(list, onlyPinned ?? false);
                 return new ActionResult<WordVM>(word);
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace Vocab.Api.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult<List<WordVM>>> Get(string categoryIds, string inputKeyword, string inputTranslation)
+        public async Task<ActionResult<List<WordVM>>> Get(string categoryIds, string inputKeyword, string inputTranslation, bool? onlyPinned)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Vocab.Api.Controllers
                 inputKeyword ??= string.Empty;
                 inputTranslation ??= string.Empty;
                 var list = categoryIds.Split(",").Where(x => int.TryParse(x, out _)).Select(x => int.Parse(x)).ToList();
-                var words = await _service.Get(list, inputKeyword, inputTranslation);
+                var words = await _service.Get(list, inputKeyword, inputTranslation, onlyPinned ?? false);
                 return new ActionResult<List<WordVM>>(words);
             }
             catch (Exception ex)
