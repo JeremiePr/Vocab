@@ -8,13 +8,13 @@
                 <div class="row">
                     <EditForm Model="_editWord" OnValidSubmit="OnAddClick">
                         <div class="col s3">
-                            <input placeholder="Key" id="bulk_word_key" type="text" class="validate" @bind="_editWord.KeyWord" autocomplete="off">
+                            <input placeholder="Key" id="bulk_word_key" type="text" class="validate" @bind="_editWord.KeyWord" autocomplete="off" spellcheck="false">
                         </div>
                         <div class="col s3">
-                            <input placeholder="Value" id="bulk_word_value" type="text" class="validate" @bind="_editWord.ValueWord" autocomplete="off">
+                            <input placeholder="Value" id="bulk_word_value" type="text" class="validate" @bind="_editWord.ValueWord" autocomplete="off" spellcheck="false">
                         </div>
                         <div class="col s3">
-                            <input placeholder="Categories" id="bulk_word_categories" type="text" class="validate" @bind="_editWordCategoryInput" autocomplete="off">
+                            <input placeholder="Categories" id="bulk_word_categories" type="text" class="validate" @bind="_editWordCategoryInput" autocomplete="off" spellcheck="false">
                         </div>
                         <div class="col s3" style="margin-top: .5em;">
                             <button class="waves-effect waves-light btn-flat" type="submit"><i class="large material-icons">add</i></button>
