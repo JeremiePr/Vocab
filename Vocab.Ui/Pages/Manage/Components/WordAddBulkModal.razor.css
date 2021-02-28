@@ -9,6 +9,12 @@
     height: 100%;
 }
 
+.list-content > .row > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .list-content::-webkit-scrollbar {
     display: none;
 }
