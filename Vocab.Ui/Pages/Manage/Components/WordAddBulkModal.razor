@@ -25,13 +25,13 @@
                     @foreach (var word in _words)
                     {
                         <div class="row" style="margin-bottom: 0;">
-                            <div class="col s3">
+                            <div class="col s3 table-line">
                                 @(word.Word.KeyWord)
                             </div>
-                            <div class="col s3">
+                            <div class="col s3 table-line">
                                 @(word.Word.ValueWord)
                             </div>
-                            <div class="col s3">
+                            <div class="col s3 table-line">
                                 Categories: @(word.Categories.Count())
                             </div>
                             <div class="col s3">
@@ -47,7 +47,7 @@
                 <div class="list-categories">
                     @foreach (var category in Categories)
                     {
-                        <p>@(category.Category.Title)</p>
+                        <p class="table-line">@(category.Category.Title)</p>
                     }
                 </div>
             </div>

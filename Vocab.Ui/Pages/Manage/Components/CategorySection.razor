@@ -23,8 +23,8 @@
                 @if (IsCategoryMatchingFilter(category))
                 {
                     <tr>
-                        <td class="col" style="width: 40%;">@category.Category.Title</td>
-                        <td class="col" style="width: 40%;">@category.WordCount</td>
+                        <td class="col table-line" style="width: 40%;">@category.Category.Title</td>
+                        <td class="col table-line" style="width: 40%;">@category.WordCount</td>
                         <td class="col" style="width: 20%;">
                             <button class="waves-effect waves-light btn-flat" @onclick="() => _categoryEditModal.Open(category.Category)">Edit</button>
                         </td>

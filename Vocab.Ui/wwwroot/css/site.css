@@ -15,3 +15,9 @@ body {
 .modal-content::-webkit-scrollbar {
     display: none;
 }
+
+.table-line, .select-dropdown {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

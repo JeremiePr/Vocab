@@ -19,7 +19,7 @@
                     <option value="0" disabled selected>Add category</option>
                     @foreach (var category in Categories)
                     {
-                        <option value="@category.Category.Id">@category.Category.Title</option>
+                        <option class="table-line" value="@category.Category.Id">@category.Category.Title</option>
                     }
                 </select>
                 <div style="height: 10px;"></div>
