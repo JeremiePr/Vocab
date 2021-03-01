@@ -17,3 +17,7 @@ function openModal(modalSelector) {
 function focusElement(elementSelector) {
     setTimeout(() => $(elementSelector).focus(), 1);
 }
+
+function scrollTop(selector) {
+    $(selector).scrollTop(0);
+}

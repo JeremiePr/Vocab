@@ -67,5 +67,10 @@ namespace Vocab.Ui.Pages.Play.Components
                 OnlyPinned = _onlyPinned
             });
         }
+
+        private async Task OnPickClick()
+        {
+            await JSRuntime.InvokeVoidAsync("scrollTop", ".page");
+        }
     }
 }

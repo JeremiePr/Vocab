@@ -23,7 +23,7 @@
                                 <td class="col" style="width: 25%;">
                                     <label>
                                         <input type="checkbox" @bind="@item.IsPicked" />
-                                        <span style='@(item.IsPicked ? "" : "color: #00000000;")'>Selected</span>
+                                        <span style='@(item.IsPicked ? "" : "color: #00000000;")' @onclick="OnPickClick">Selected</span>
                                     </label>
                                 </td>
                             </tr>

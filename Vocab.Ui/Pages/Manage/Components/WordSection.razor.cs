@@ -65,6 +65,7 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task OnPinClick(Word word)
         {
+            await JSRuntime.InvokeVoidAsync("scrollTop", ".page");
             word.IsPinned = !word.IsPinned;
             _ = await WordService.Update(word);
             StateHasChanged();
