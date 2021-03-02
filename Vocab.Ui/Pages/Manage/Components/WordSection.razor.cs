@@ -74,6 +74,7 @@ namespace Vocab.Ui.Pages.Manage.Components
         private async Task OnWordAdd()
         {
             if (string.IsNullOrWhiteSpace(_wordEdit.KeyWord) || string.IsNullOrWhiteSpace(_wordEdit.ValueWord) || _wordEditInitialCategory == 0) return;
+            _wordEdit.IsPinned = true;
             var word = await WordService.Create(_wordEdit);
             await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = new List<int> { _wordEditInitialCategory } });
             _wordEdit = new Word();
@@ -88,6 +89,7 @@ namespace Vocab.Ui.Pages.Manage.Components
             foreach (var w in words)
             {
                 w.Word.Id = 0;
+                w.Word.IsPinned = true;
                 var categoryIds = w.Categories.Select(x => x.Id).ToList();
                 var word = await WordService.Create(w.Word);
                 await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = categoryIds });
