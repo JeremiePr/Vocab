@@ -47,7 +47,8 @@ namespace Vocab.Ui.Pages.Manage.Components
                     Id = word.Word.Id,
                     IsActive = word.Word.IsActive,
                     KeyWord = word.Word.KeyWord,
-                    ValueWord = word.Word.ValueWord
+                    ValueWord = word.Word.ValueWord,
+                    IsPinned = word.Word.IsPinned
                 },
                 Categories = word.Categories.Select(x => new Category { Id = x.Id, IsActive = x.IsActive, Title = x.Title }).ToList()
             };
