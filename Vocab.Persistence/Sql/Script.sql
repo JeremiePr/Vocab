@@ -56,3 +56,9 @@ add IsPinned bit not null
 constraint DF_Word_IsPinned
 default 0
 go
+
+alter table Category
+add IsDefault bit not null
+constraint DF_Category_IsDefault
+default 0
+go

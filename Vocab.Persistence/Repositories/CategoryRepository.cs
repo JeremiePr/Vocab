@@ -20,7 +20,8 @@ namespace Vocab.Persistence.Repositories
         {
             return _context.Categories
                 .Where(x => x.IsActive)
-                .OrderBy(x => x.Title)
+                .OrderByDescending(x => x.IsDefault)
+                .ThenBy(x => x.Title)
                 .ToListAsync();
         }
 
@@ -35,7 +36,8 @@ namespace Vocab.Persistence.Repositories
             return _context.Categories
                 .Where(x => x.IsActive)
                 .Where(x => x.WordCategories.Any(y => y.WordId == wordId))
-                .OrderBy(x => x.Title)
+                .OrderByDescending(x => x.IsDefault)
+                .ThenBy(x => x.Title)
                 .ToListAsync();
         }
 

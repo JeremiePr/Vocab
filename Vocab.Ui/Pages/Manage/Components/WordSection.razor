@@ -84,10 +84,16 @@
                 <div class="col s4">
                     <div class="input-field">
                         <select id="word_initial_category" @bind="_wordEditInitialCategory">
-                            <option value="0" disabled selected>Category</option>
                             @foreach (var category in _categories)
                             {
-                                <option class="table-line" value="@category.Category.Id">@category.Category.Title</option>
+                                if (category.Category.IsDefault)
+                                {
+                                    <option class="table-line" value="@category.Category.Id" disabled selected>@category.Category.Title</option>
+                                }
+                                else
+                                {
+                                    <option class="table-line" value="@category.Category.Id">@category.Category.Title</option>
+                                }
                             }
                         </select>
                     </div>

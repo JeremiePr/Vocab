@@ -7,6 +7,7 @@ namespace Vocab.Domain.Entities
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public bool IsDefault { get; set; }
         public ICollection<WordCategory> WordCategories { get; set; }
     }
 }

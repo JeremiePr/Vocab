@@ -48,6 +48,7 @@ namespace Vocab.Ui.Pages.Manage.Components
         private async Task LoadCategories()
         {
             _categories = await CategoryService.Get();
+            _wordEditInitialCategory = _categories.Single(x => x.Category.IsDefault).Category.Id;
         }
 
         private async Task LoadWords()

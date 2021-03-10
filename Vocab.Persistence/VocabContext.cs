@@ -38,6 +38,9 @@ namespace Vocab.Persistence
                     .HasColumnName("Title")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.IsDefault)
+                    .HasColumnName("IsDefault");
+
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("UpdateDate");
             });
