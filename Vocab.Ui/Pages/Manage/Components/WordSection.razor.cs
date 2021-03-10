@@ -74,12 +74,12 @@ namespace Vocab.Ui.Pages.Manage.Components
 
         private async Task OnWordAdd()
         {
-            if (string.IsNullOrWhiteSpace(_wordEdit.KeyWord) || string.IsNullOrWhiteSpace(_wordEdit.ValueWord) || _wordEditInitialCategory == 0) return;
+            if (string.IsNullOrWhiteSpace(_wordEdit.KeyWord) || string.IsNullOrWhiteSpace(_wordEdit.ValueWord)) return;
             _wordEdit.IsPinned = true;
             var word = await WordService.Create(_wordEdit);
             await WordService.UpdateCategories(new WordCategoryVM { WordId = word.Id, CategoryIds = new List<int> { _wordEditInitialCategory } });
             _wordEdit = new Word();
-            _wordEditInitialCategory = 0;
+            _wordEditInitialCategory = _categories.Single(x => x.Category.IsDefault).Category.Id;
             await LoadWords();
             await OnCategoryReloadRequest.InvokeAsync();
             StateHasChanged();
