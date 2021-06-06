@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { MatCardModule } from '@angular/material/card';
         MatButtonModule,
         MatSelectModule,
         MatDividerModule,
-        MatCardModule
+        MatCardModule,
+        MatSortModule
     ],
     providers: [],
     bootstrap: [AppComponent]
