@@ -1,0 +1,74 @@
+<div fxLayout="row" class="play-container">
+    <div fxFlex="75" class="play-section">
+        <div *ngIf="isGameStarted" fxLayout="column" fxLayoutAlign="space-around center">
+            <h1>{{gameItems[currentGameItemIndex].value1}}</h1>
+            <div style="height: 20px;"></div>
+            <h4 class="reveal-text">
+                {{isGameItemRevealed ? gameItems[currentGameItemIndex].value2 : ''}}
+            </h4>
+            <div style="height: 10px;"></div>
+            <div>
+                <button class="reveal-button" *ngIf="!isGameItemRevealed" mat-button (click)="isGameItemRevealed = true">Reveal</button>
+                <button class="reveal-button" *ngIf="isGameItemRevealed" mat-button (click)="isGameItemRevealed = false">Hide</button>
+            </div>
+            <div style="height: 40px;"></div>
+            <mat-form-field appearance="fill">
+                <mat-label>set importancy</mat-label>
+                <mat-select [(ngModel)]="gameItems[currentGameItemIndex].importancy" (ngModelChange)="onWordImportancyChange(gameItems[currentGameItemIndex])">
+                    <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
+                        {{level.text}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div style="height: 40px;"></div>
+            <button class="play-button" mat-raised-button color="primary" (click)="onNextClick()">
+                <div fxLayout="row">
+                    <div fxFlex="15"></div>
+                    <div fxFlex="70">Next</div>
+                    <div fxFlex="15">
+                        <div fxLayout="column" fxFill fxLayoutAlign="center">
+                            <mat-icon>navigate_next</mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </button>
+            <div style="height: 40px;"></div>
+            <button class="play-button" color="warn" mat-button (click)="onLeaveClick()">Leave</button>
+        </div>
+        <div *ngIf="!isGameStarted">
+            <div style="height: 100px;"></div>
+            <span class="game-placeholder-text">Setting up game...</span>
+        </div>
+    </div>
+    <mat-divider vertical></mat-divider>
+    <div fxFlex="25" class="play-section">
+        <div fxLayout="column" fxLayoutAlign="space-around center">
+            <p>Game settings</p>
+            <div style="height: 30px;"></div>
+            <div class="form-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Importancy</mat-label>
+                    <mat-select [(ngModel)]="selectedImportancy" [disabled]="isGameStarted">
+                        <mat-option *ngFor="let level of importancyLevelsFilters" [value]="level.value">
+                            {{level.text}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="form-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Direction</mat-label>
+                    <mat-select [(ngModel)]="selectedDirection" [disabled]="isGameStarted">
+                        <mat-option *ngFor="let direction of directions" [value]="direction.value">
+                            {{direction.text}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div style="height: 30px;"></div>
+            <div class="form-container">
+                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted">Play with {{getWordCount()}} words</button>
+            </div>
+        </div>
+    </div>
+</div>

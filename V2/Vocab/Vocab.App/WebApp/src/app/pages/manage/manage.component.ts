@@ -3,8 +3,10 @@ import { Word } from 'src/app/models/word';
 import { WordService } from '../../services/word.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { Importancy } from '../../models/importancy';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { tap, switchMap } from 'rxjs/operators';
 import { MatSort } from '@angular/material/sort';
+import { EventService } from '../../services/event.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 const DISPLAYED_COLUMNS = ['key', 'value', 'notes', 'importancy', 'actions'];
 const IMPORTANCY_LEVELS = [{ value: 1, text: 'Low' }, { value: 2, text: 'Medium' }, { value: 3, text: 'High' }];
@@ -29,13 +31,8 @@ interface Filters {
 })
 export class ManageComponent implements OnInit, AfterViewInit {
 
-    // @ViewChild(MatSort, { static: false }) set sort(sort: MatSort) {
-    //     if (sort) {
-    //         this.dataSource.sort = sort;
-    //     }
-    // }
-
     @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     dataSource = new MatTableDataSource<Row>();
     displayedColumns = DISPLAYED_COLUMNS;
@@ -44,10 +41,11 @@ export class ManageComponent implements OnInit, AfterViewInit {
     focusedRowIndex = 0;
     focusedColumnName = '';
     isReady = false;
+    isLoading = false;
     filters: Filters = { search: '', importancy: 1 };
     wordCreate: Word = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High };
 
-    constructor(private wordService: WordService) { }
+    constructor(private wordService: WordService, private eventService: EventService) { }
 
     ngOnInit(): void {
         this.loadData();
@@ -90,9 +88,12 @@ export class ManageComponent implements OnInit, AfterViewInit {
                     return data;
             }
         }
+        this.dataSource.paginator = this.paginator;
     }
 
     loadData(): void {
+        this.isLoading = true;
+        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.get('')
             .subscribe(words => {
                 this.dataSource.data = words.map((word: Word, index: number) => ({
@@ -102,7 +103,9 @@ export class ManageComponent implements OnInit, AfterViewInit {
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
                 this.isReady = true;
+                this.isLoading = false;
             });
     }
 
@@ -116,6 +119,10 @@ export class ManageComponent implements OnInit, AfterViewInit {
         this.focusedColumnName = columnName;
     }
 
+    onSearchClick(): void {
+        this.loadData();
+    }
+
     onResetClick(row: Row): void {
         row.word.key = row.referenceFields.key;
         row.word.value = row.referenceFields.value;
@@ -125,10 +132,11 @@ export class ManageComponent implements OnInit, AfterViewInit {
     }
 
     onAddClick(): void {
+        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.create(this.wordCreate)
             .pipe(
-                map(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
-                switchMap(() => this.wordService.get(''))
+                tap(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
+                switchMap(_ => this.wordService.get(''))
             )
             .subscribe(words => {
                 this.dataSource.data = words.map((word: Word, index: number) => ({
@@ -138,10 +146,12 @@ export class ManageComponent implements OnInit, AfterViewInit {
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
             });
     }
 
     onSaveClick(row: Row): void {
+        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.update(row.word)
             .pipe(
                 tap(w => {
@@ -162,14 +172,25 @@ export class ManageComponent implements OnInit, AfterViewInit {
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
             });
     }
 
     onDeleteClick(row: Row): void {
+        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.delete(row.word.id)
-            .subscribe(() => {
-                this.dataSource.data.splice(row.index, 1);
+            .pipe(
+                switchMap(() => this.wordService.get(''))
+            )
+            .subscribe(words => {
+                this.dataSource.data = words.map((word: Word, index: number) => ({
+                    word,
+                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                    index,
+                    isModified: false
+                }));
                 this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
             });
     }
 
@@ -177,6 +198,11 @@ export class ManageComponent implements OnInit, AfterViewInit {
         const editWord = row.word;
         const ref = row.referenceFields;
         row.isModified = editWord.key !== ref.key || editWord.value !== ref.value || editWord.notes !== ref.notes || editWord.importancy !== ref.importancy;
+        if (row.isModified) {
+            this.dataSource.data
+                .filter(x => x.index !== row.index && x.isModified)
+                .forEach(x => this.onResetClick(x));
+        }
     }
 
     onClearSearchClick(): void {
@@ -200,6 +226,6 @@ export class ManageComponent implements OnInit, AfterViewInit {
     }
 
     isWordCreateValid(): boolean {
-        return this.wordCreate.key !== '' && this.wordCreate.value !== ''
+        return this.wordCreate.key !== '' && this.wordCreate.value !== '';
     }
 }

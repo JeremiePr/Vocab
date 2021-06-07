@@ -18,12 +18,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatSortModule } from '@angular/material/sort';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { NavbarComponent } from './shared/navbar/navbar.component';
+import { ProgressComponent } from './shared/progress/progress.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
     declarations: [
         AppComponent,
         ManageComponent,
-        PlayComponent
+        PlayComponent,
+        NavbarComponent,
+        ProgressComponent,
     ],
     imports: [
         BrowserModule,
@@ -41,7 +48,10 @@ import { MatSortModule } from '@angular/material/sort';
         MatSelectModule,
         MatDividerModule,
         MatCardModule,
-        MatSortModule
+        MatSortModule,
+        MatProgressBarModule,
+        MatCheckboxModule,
+        MatIconModule
     ],
     providers: [],
     bootstrap: [AppComponent]

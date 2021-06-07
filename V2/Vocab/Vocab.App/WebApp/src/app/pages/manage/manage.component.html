@@ -1,9 +1,9 @@
-<div fxLayout="row" fxLayoutAlign="space-between">
+<div fxLayout="row" fxLayoutAlign="space-between" [ngStyle]="{ 'display': isReady ? 'flex' : 'none' }">
     <div fxLayout="row" fxLayoutAlign="start">
         <mat-form-field class="spaced-field">
             <mat-label>Search</mat-label>
             <input matInput [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()" placeholder="search..."
-                #input>
+                spellcheck="false" autocomplete="off">
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Importancy</mat-label>
@@ -14,20 +14,25 @@
             </mat-select>
         </mat-form-field>
         <button mat-button class="button-low" style="height: 40px; margin: 8px 10px 4px 20px;"
-            (click)="onClearSearchClick()" [disabled]="!isFiltersModified()">Clear search</button>
+            (click)="onClearSearchClick()" [disabled]="!isFiltersModified()">Clear</button>
+            <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
+            (click)="onSearchClick()" [disabled]="isLoading">Load data</button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end">
         <mat-form-field class="spaced-field">
             <mat-label>Key</mat-label>
-            <input matInput [(ngModel)]="wordCreate.key" (keyup.enter)="onAddClick()" spellcheck="false">
+            <input matInput [(ngModel)]="wordCreate.key" (keyup.enter)="onAddClick()" spellcheck="false"
+                autocomplete="off">
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Value</mat-label>
-            <input matInput [(ngModel)]="wordCreate.value" (keyup.enter)="onAddClick()" spellcheck="false">
+            <input matInput [(ngModel)]="wordCreate.value" (keyup.enter)="onAddClick()" spellcheck="false"
+                autocomplete="off">
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Notes</mat-label>
-            <input matInput [(ngModel)]="wordCreate.notes" (keyup.enter)="onAddClick()" spellcheck="false">
+            <input matInput [(ngModel)]="wordCreate.notes" (keyup.enter)="onAddClick()" spellcheck="false"
+                autocomplete="off">
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Importancy</mat-label>
@@ -38,20 +43,21 @@
             </mat-select>
         </mat-form-field>
         <button mat-button class="button-low" style="height: 40px; margin: 8px 10px 4px 20px;"
-            (click)="onClearAddClick()" [disabled]="!isWordCreateModified()">Clear</button>
+            (click)="onClearAddClick()" [disabled]="!isWordCreateModified()">Cancel</button>
         <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px" (click)="onAddClick()"
             [disabled]="!isWordCreateValid()">Add word</button>
     </div>
 </div>
-
-<div class="table-container mat-elevation-z8" style="margin-top: 10px;" [ngStyle]="{ 'visibility': isReady ? 'visible' : 'hidden' }">
+<div class="table-container mat-elevation-z8" style="margin-top: 10px;"
+    [ngStyle]="{ 'display': isReady ? 'block' : 'none' }">
     <table mat-table [dataSource]="dataSource" matSort fixedLayout>
         <ng-container matColumnDef="key">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Key</th>
             <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'key')">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.key" (ngModelChange)="onRowChange(row)"
-                        spellcheck="false">
+                        spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
+                        (keyup.enter)="onSaveClick(row)" (keyup.escape)="onResetClick(row)">
                 </mat-form-field>
             </td>
         </ng-container>
@@ -60,7 +66,8 @@
             <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'value')">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.value" (ngModelChange)="onRowChange(row)"
-                        spellcheck="false">
+                        spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
+                        (keyup.enter)="onSaveClick(row)" (keyup.escape)="onResetClick(row)">
                 </mat-form-field>
             </td>
         </ng-container>
@@ -69,7 +76,8 @@
             <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'notes')">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.notes" (ngModelChange)="onRowChange(row)"
-                        spellcheck="false">
+                        spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
+                        (keyup.enter)="onSaveClick(row)" (keyup.escape)="onResetClick(row)">
                 </mat-form-field>
             </td>
         </ng-container>
@@ -77,8 +85,10 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Importancy</th>th>
             <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'importancy')">
                 <mat-form-field>
-                    <mat-select [(ngModel)]="row.word.importancy" (ngModelChange)="onRowChange(row)">
-                        <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
+                    <mat-select [(ngModel)]="row.word.importancy" (ngModelChange)="onRowChange(row)"
+                        [ngClass]="{ 'text-edition': row.isModified}">
+                        <mat-option *ngFor="let level of importancyLevels" [value]="level.value"
+                            [ngClass]="{ 'text-edition': row.isModified}">
                             {{level.text}}
                         </mat-option>
                     </mat-select>
@@ -86,11 +96,11 @@
             </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+            <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let row; let i = index">
                 <div fxLayout="row" fxLayoutAlign="end">
                     <button class="spaced-field button-low" mat-button (click)="onResetClick(row)"
-                        [disabled]="!row.isModified">Reset</button>
+                        [disabled]="!row.isModified">Cancel</button>
                     <button class="spaced-field" mat-button color="primary" (click)="onSaveClick(row)"
                         [disabled]="!row.isModified">Save</button>
                     <button class="spaced-field" mat-button color="accent" (click)="onDeleteClick(row)">Delete</button>
@@ -103,4 +113,5 @@
             <td class="mat-cell hint-info" colspan="4">No data</td>
         </tr>
     </table>
+    <mat-paginator [pageSizeOptions]="[10, 15, 20, 30]" showFirstLastButtons class="paginator-sticky"></mat-paginator>
 </div>
