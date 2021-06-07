@@ -14,4 +14,6 @@ class EventContainer<T> {
 export class EventService {
     startProgressBarEvent = new EventContainer<{ mode: 'determinate'|'indeterminate', value: number }>();
     stopProgressBarEvent = new EventContainer<void>();
+    toggleLightTheme = new EventContainer<void>();
+    toggleDarkTheme = new EventContainer<void>();
 }

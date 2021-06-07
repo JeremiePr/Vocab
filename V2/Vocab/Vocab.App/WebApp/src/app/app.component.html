@@ -1,5 +1,7 @@
-<app-navbar></app-navbar>
-<app-progress></app-progress>
-<div class="container">
-    <router-outlet></router-outlet>
+<div [ngClass]="{ 'dark-theme': isDarkTheme }" class="container mat-app-background">
+    <app-navbar></app-navbar>
+    <app-progress></app-progress>
+    <div class="body">
+        <router-outlet></router-outlet>
+    </div>
 </div>

@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ManageComponent } from './pages/manage/manage.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { FlexModule } from '@angular/flex-layout';
+import { GridModule } from '@angular/flex-layout/grid';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { PlayComponent } from './pages/play/play.component';
 import { MatTableModule } from '@angular/material/table';
@@ -23,6 +25,7 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ProgressComponent } from './shared/progress/progress.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 @NgModule({
     declarations: [
@@ -38,6 +41,8 @@ import { MatIconModule } from '@angular/material/icon';
         HttpClientModule,
         BrowserAnimationsModule,
         MatToolbarModule,
+        FlexModule,
+        GridModule,
         FlexLayoutModule,
         MatTableModule,
         MatPaginatorModule,
@@ -51,7 +56,8 @@ import { MatIconModule } from '@angular/material/icon';
         MatSortModule,
         MatProgressBarModule,
         MatCheckboxModule,
-        MatIconModule
+        MatIconModule,
+        MatSlideToggleModule
     ],
     providers: [],
     bootstrap: [AppComponent]

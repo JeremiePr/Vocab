@@ -1,0 +1,20 @@
+@import '~@angular/material/theming';
+@include mat-core();
+
+$vocab-primary: mat-palette($mat-indigo);
+$vocab-accent: mat-palette($mat-light-green);
+$vocab-warn: mat-palette($mat-red);
+
+$vocab-theme: mat-light-theme($vocab-primary, $vocab-accent, $vocab-warn);
+
+@include angular-material-theme($vocab-theme);
+
+$vocab-primary-dark: mat-palette($mat-pink);
+$vocab-accent-dark: mat-palette($mat-lime);
+$vocab-warn-dark: mat-palette($mat-red);
+
+$vocab-theme-dark: mat-dark-theme($vocab-primary-dark, $vocab-accent-dark, $vocab-warn-dark);
+
+.dark-theme {
+    @include angular-material-theme($vocab-theme-dark);
+}

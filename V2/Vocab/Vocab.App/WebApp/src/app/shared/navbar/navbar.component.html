@@ -1,9 +1,17 @@
-<mat-toolbar color="primary">
-    <div fxLayout="row" fxLayoutAlign="start">
-        <button routerLink="" mat-button class="title">Вокаб</button>
-        <div style="width: 50px;"></div>
-        <button routerLink="/play" mat-button class="section">Play</button>
-        <div style="width: 10px;"></div>
-        <button routerLink="/manage" mat-button class="section">Manage</button>
+<mat-toolbar color="primary" class="navbar">
+    <div fxLayout="row" fxLayoutGap="10px" style="width: 100%">
+        <div fxLayoutAlign="center center">
+            <button routerLink="" mat-button class="title">Вокаб</button>
+            <div style="width: 50px;"></div>
+            <button routerLink="/play" mat-button class="section">Play</button>
+            <div style="width: 10px;"></div>
+            <button routerLink="/manage" mat-button class="section">Manage</button>
+        </div>
+        <div fxFlex="2 1 auto" fxLayoutAlign="center center"></div>
+        <div fxLayoutAlign="center center">
+            <mat-icon class="material-icons-outlined">{{ themeToggle ? 'dark_mode' : 'light_mode' }}</mat-icon>
+            <div style="width: 20px;"></div>
+            <mat-slide-toggle [(ngModel)]="themeToggle" (ngModelChange)="onChangeThemeToggle()"></mat-slide-toggle>
+        </div>
     </div>
 </mat-toolbar>
