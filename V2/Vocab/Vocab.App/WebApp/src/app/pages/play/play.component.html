@@ -70,7 +70,7 @@
             </div>
             <div style="height: 30px;"></div>
             <div class="form-container">
-                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted">Play with {{getWordCount()}} words</button>
+                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted || getWordCount() === 0">Play with {{getWordCount()}} words</button>
             </div>
         </div>
     </div>
