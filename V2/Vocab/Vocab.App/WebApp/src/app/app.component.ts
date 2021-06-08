@@ -1,26 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { takeWhile } from 'rxjs/operators';
-import { EventService } from './services/event.service';
+import { DOCUMENT } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, Renderer2 } from '@angular/core';
+import { UiService } from './services/ui.service';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.sass']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
 
-    title = 'Vocab';
-    isAlive = true;
-    isDarkTheme = false;
-
-    constructor(private eventService: EventService) { }
-
-    ngOnInit(): void {
-        this.eventService.toggleLightTheme.event.pipe(takeWhile(() => this.isAlive)).subscribe(() => this.isDarkTheme = false);
-        this.eventService.toggleDarkTheme.event.pipe(takeWhile(() => this.isAlive)).subscribe(() => this.isDarkTheme = true);
-    }
-
-    ngOnDestroy(): void {
-        this.isAlive = false;
+    constructor(@Inject(DOCUMENT) private document: Document, private renderer: Renderer2, private uiService: UiService) {
+        this.uiService.initialize(this.document, this.renderer);
     }
 }

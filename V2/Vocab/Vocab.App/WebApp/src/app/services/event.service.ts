@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
 
 class EventContainer<T> {
     private source = new Subject<T>();
@@ -14,6 +13,4 @@ class EventContainer<T> {
 export class EventService {
     startProgressBarEvent = new EventContainer<{ mode: 'determinate'|'indeterminate', value: number }>();
     stopProgressBarEvent = new EventContainer<void>();
-    toggleLightTheme = new EventContainer<void>();
-    toggleDarkTheme = new EventContainer<void>();
 }

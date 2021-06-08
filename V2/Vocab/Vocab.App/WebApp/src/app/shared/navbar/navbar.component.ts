@@ -1,24 +1,27 @@
-import { Component } from '@angular/core';
-import { EventService } from '../../services/event.service';
+import { Component, OnInit } from '@angular/core';
+import { UiService } from '../../services/ui.service';
 
 @Component({
     selector: 'app-navbar',
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.sass']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
     themeToggle = false;
 
-    constructor(private eventService: EventService) { }
+    constructor(private uiService: UiService) { }
+
+    ngOnInit(): void {
+        this.themeToggle = this.uiService.isDarkTheme();
+    }
 
     onChangeThemeToggle(): void {
         if (this.themeToggle) {
-            this.eventService.toggleDarkTheme.emit();
+            this.uiService.setDarkTheme();
         }
         else {
-            this.eventService.toggleLightTheme.emit();
+            this.uiService.setLightTheme();
         }
     }
-
 }

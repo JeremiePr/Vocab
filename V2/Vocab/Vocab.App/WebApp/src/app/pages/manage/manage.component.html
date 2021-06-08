@@ -13,7 +13,7 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-button class="button-low" style="height: 40px; margin: 8px 10px 4px 20px;"
+        <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;"
             (click)="onClearSearchClick()" [disabled]="!isFiltersModified()">Clear</button>
             <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
             (click)="onSearchClick()" [disabled]="isLoading">Load data</button>
@@ -42,7 +42,7 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-button class="button-low" style="height: 40px; margin: 8px 10px 4px 20px;"
+        <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;"
             (click)="onClearAddClick()" [disabled]="!isWordCreateModified()">Cancel</button>
         <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px" (click)="onAddClick()"
             [disabled]="!isWordCreateValid()">Add word</button>
@@ -86,9 +86,9 @@
             <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'importancy')">
                 <mat-form-field>
                     <mat-select [(ngModel)]="row.word.importancy" (ngModelChange)="onRowChange(row)"
-                        [ngClass]="{ 'text-edition': row.isModified}">
+                        [ngClass]="{ 'text-edition': row.isModified}" color="accent">
                         <mat-option *ngFor="let level of importancyLevels" [value]="level.value"
-                            [ngClass]="{ 'text-edition': row.isModified}">
+                            [ngClass]="{ 'text-edition': row.isModified}" color="accent">
                             {{level.text}}
                         </mat-option>
                     </mat-select>
@@ -99,11 +99,9 @@
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let row; let i = index">
                 <div fxLayout="row" fxLayoutAlign="end">
-                    <button class="spaced-field button-low" mat-button (click)="onResetClick(row)"
-                        [disabled]="!row.isModified">Cancel</button>
-                    <button class="spaced-field" mat-button color="primary" (click)="onSaveClick(row)"
-                        [disabled]="!row.isModified">Save</button>
-                    <button class="spaced-field" mat-button color="accent" (click)="onDeleteClick(row)">Delete</button>
+                    <button class="spaced-field" mat-button (click)="onResetClick(row)" [disabled]="!row.isModified">Cancel</button>
+                    <button class="spaced-field button-success" mat-button (click)="onSaveClick(row)" [disabled]="!row.isModified">Save</button>
+                    <button class="spaced-field" color="warn" mat-button (click)="onDeleteClick(row)">Delete</button>
                 </div>
             </td>
         </ng-container>
