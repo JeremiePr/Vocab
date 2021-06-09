@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Word } from 'src/app/models/word';
 import { WordService } from '../../services/word.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -33,6 +33,7 @@ export class ManageComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatSort) sort!: MatSort;
     @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild('inputCreateKey') inputCreateKey !: ElementRef;
 
     dataSource = new MatTableDataSource<Row>();
     displayedColumns = DISPLAYED_COLUMNS;
@@ -147,6 +148,7 @@ export class ManageComponent implements OnInit, AfterViewInit {
                 }));
                 this.dataSource._updateChangeSubscription();
                 this.eventService.stopProgressBarEvent.emit();
+                this.inputCreateKey.nativeElement.focus();
             });
     }
 

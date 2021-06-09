@@ -22,7 +22,7 @@
         <mat-form-field class="spaced-field">
             <mat-label>Key</mat-label>
             <input matInput [(ngModel)]="wordCreate.key" (keyup.enter)="onAddClick()" spellcheck="false"
-                autocomplete="off">
+                autocomplete="off" #inputCreateKey>
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Value</mat-label>
