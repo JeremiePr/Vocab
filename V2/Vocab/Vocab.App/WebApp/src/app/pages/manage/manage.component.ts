@@ -152,6 +152,12 @@ export class ManageComponent implements OnInit, AfterViewInit {
             });
     }
 
+    onEnterAddKeyPress(): void {
+        if (this.isWordCreateValid()) {
+            this.onAddClick();
+        }
+    }
+
     onSaveClick(row: Row): void {
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.update(row.word)
@@ -176,6 +182,12 @@ export class ManageComponent implements OnInit, AfterViewInit {
                 this.dataSource._updateChangeSubscription();
                 this.eventService.stopProgressBarEvent.emit();
             });
+    }
+
+    onEnterSaveKeyPress(row: Row): void {
+        if (this.isWordValid(row.word)) {
+            this.onSaveClick(row);
+        }
     }
 
     onDeleteClick(row: Row): void {
@@ -229,5 +241,9 @@ export class ManageComponent implements OnInit, AfterViewInit {
 
     isWordCreateValid(): boolean {
         return this.wordCreate.key !== '' && this.wordCreate.value !== '';
+    }
+
+    isWordValid(word: Word): boolean {
+        return word.key !== '' && word.value !== '';
     }
 }
