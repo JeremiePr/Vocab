@@ -1,17 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { Word } from 'src/app/models/word';
+import { Word } from '../../models/word';
 import { WordService } from '../../services/word.service';
 import { GameItem } from '../../models/game-item';
+import { Importancy } from '../../models/importancy';
+import { Direction } from '../../models/direction';
+import { ImportancyFilter } from '../../models/importancy-filter';
 
-const IMPORTANCY_LEVELS = [{ value: 1, text: 'Low' }, { value: 2, text: 'Medium' }, { value: 3, text: 'High' }];
-const IMPORTANCY_LEVELS_FILTERS = [{ value: 1, text: 'All' }, { value: 2, text: 'Medium / High' }, { value: 3, text: 'High only' }];
-const DIRECTIONS = [{ value: 1, text: 'Normal' }, { value: 2, text: 'Reversed' }, { value: 3, text: 'Both directions' }];
+const IMPORTANCY_LEVELS = [
+    { value: 1, text: 'Low' },
+    { value: 2, text: 'Medium' },
+    { value: 3, text: 'High' }
+];
 
-enum Direction {
-    Normal = 1,
-    Reversed = 2,
-    Both = 3
-}
+const IMPORTANCY_LEVELS_FILTERS = [
+    { value: 1, text: 'All' },
+    { value: 2, text: 'Medium / High' },
+    { value: 3, text: 'High only' },
+    { value: 4, text: 'Medium only' },
+    { value: 5, text: 'Low only' }
+];
+
+const DIRECTIONS = [
+    { value: 1, text: 'Normal' },
+    { value: 2, text: 'Reversed' },
+    { value: 3, text: 'Both directions' }
+];
 
 @Component({
     selector: 'app-play',
@@ -26,11 +39,12 @@ export class PlayComponent implements OnInit {
     importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
     directions = DIRECTIONS;
     isReady = false;
-    selectedImportancy = 3;
+    selectedImportancy = ImportancyFilter.HighOnly;
     selectedDirection = Direction.Normal;
     currentGameItemIndex = 0;
     isGameStarted = false;
     isGameItemRevealed = false;
+    wordCount = 0;
 
     constructor(private wordService: WordService) { }
 
@@ -40,20 +54,17 @@ export class PlayComponent implements OnInit {
 
     loadData(): void {
         this.wordService.get('')
-            .subscribe(words => {
-                this.words = words;
-                this.isReady = true;
-            });
-    }
-
-    getWordCount(): number {
-        return this.words.filter(x => x.importancy >= this.selectedImportancy).length;
+        .subscribe(words => {
+            this.words = words;
+            this.onSelectedImportancyChange();
+            this.isReady = true;
+        });
     }
 
     generateWordsGame(): void {
         this.gameItems = [];
         const gameItems: Array<GameItem> = [];
-        for (const word of this.words.filter(x => x.importancy >= this.selectedImportancy)) {
+        for (const word of this.words.filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy))) {
             switch (this.selectedDirection) {
                 case Direction.Normal:
                     gameItems.push({ wordId: word.id, value1: word.key, value2: word.value, importancy: word.importancy });
@@ -90,9 +101,14 @@ export class PlayComponent implements OnInit {
     }
 
     onLeaveClick(): void {
-        this.currentGameItemIndex = 0;
-        this.isGameStarted = false;
-        this.gameItems = [];
+        this.wordService.get('')
+        .subscribe(words => {
+            this.words = words;
+            this.currentGameItemIndex = 0;
+            this.isGameStarted = false;
+            this.gameItems = [];
+            this.isGameItemRevealed = false;
+        });
     }
 
     onNextClick(): void {
@@ -110,7 +126,24 @@ export class PlayComponent implements OnInit {
         if (!word) {
             return;
         }
-        word.importancy = gameItem.importancy;
-        this.wordService.update(word).subscribe();
+        const wordEdit: Word = { id: word.id, key: word.key, value: word.value, notes: word.notes, importancy: gameItem.importancy };
+        this.wordService.update(wordEdit).subscribe();
+    }
+
+    onSelectedImportancyChange(): void {
+        this.wordCount = this.words
+            .filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy))
+            .length;
+    }
+
+    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean {
+        switch (referenceImportancy) {
+            case ImportancyFilter.All: return true;
+            case ImportancyFilter.MediumHigh: return word.importancy >= Importancy.Medium;
+            case ImportancyFilter.HighOnly: return word.importancy === Importancy.High;
+            case ImportancyFilter.MediumOnly: return word.importancy === Importancy.Medium;
+            case ImportancyFilter.LowOnly: return word.importancy === Importancy.Low;
+            default: return true
+        } 
     }
 }

@@ -23,19 +23,19 @@ export class ProgressComponent implements OnInit, OnDestroy {
 
     subscribeEvents(): void {
         this.eventService.startProgressBarEvent.event
-            .pipe(takeWhile(_ => this.isAlive))
-            .subscribe(container => {
-                this.isActive = true;
-                this.mode = container.mode;
-                this.value = container.value;
-            });
+        .pipe(takeWhile(_ => this.isAlive))
+        .subscribe(container => {
+            this.isActive = true;
+            this.mode = container.mode;
+            this.value = container.value;
+        });
         this.eventService.stopProgressBarEvent.event
-            .pipe(takeWhile(_ => this.isActive))
-            .subscribe(() => {
-                this.isActive = false;
-                this.mode = 'indeterminate';
-                this.value = 0;
-            });
+        .pipe(takeWhile(_ => this.isActive))
+        .subscribe(() => {
+            this.isActive = false;
+            this.mode = 'indeterminate';
+            this.value = 0;
+        });
     }
 
     ngOnDestroy(): void {

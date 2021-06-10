@@ -34,9 +34,9 @@
             </button>
             <div style="height: 40px;"></div>
             <button class="play-button" color="warn" mat-button (click)="onLeaveClick()">Leave</button>
-            <div fxLayout="row" fxFlexAlign="end" style="margin-right: 50px;">
-                <p>{{currentGameItemIndex + 1}}/{{gameItems.length}}</p>
-            </div>
+        </div>
+        <div *ngIf="isGameStarted" fxLayout="row" fxLayoutAlign="end end" class="count-section">
+            <p>{{currentGameItemIndex + 1}}/{{gameItems.length}}</p>
         </div>
         <div *ngIf="!isGameStarted">
             <div style="height: 100px;"></div>
@@ -51,7 +51,7 @@
             <div class="form-container">
                 <mat-form-field appearance="fill">
                     <mat-label>Importancy</mat-label>
-                    <mat-select [(ngModel)]="selectedImportancy" [disabled]="isGameStarted">
+                    <mat-select [(ngModel)]="selectedImportancy" (ngModelChange)="onSelectedImportancyChange()" [disabled]="isGameStarted">
                         <mat-option *ngFor="let level of importancyLevelsFilters" [value]="level.value">
                             {{level.text}}
                         </mat-option>
@@ -70,7 +70,7 @@
             </div>
             <div style="height: 30px;"></div>
             <div class="form-container">
-                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted || getWordCount() === 0">Play with {{getWordCount()}} words</button>
+                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted || wordCount === 0">Play with {{wordCount}} words</button>
             </div>
         </div>
     </div>
