@@ -56,6 +56,10 @@ export class PlayComponent implements OnInit {
         this.wordService.get('')
         .subscribe(words => {
             this.words = words;
+            this.currentGameItemIndex = 0;
+            this.isGameStarted = false;
+            this.gameItems = [];
+            this.isGameItemRevealed = false;
             this.onSelectedImportancyChange();
             this.isReady = true;
         });
@@ -101,23 +105,14 @@ export class PlayComponent implements OnInit {
     }
 
     onLeaveClick(): void {
-        this.wordService.get('')
-        .subscribe(words => {
-            this.words = words;
-            this.currentGameItemIndex = 0;
-            this.isGameStarted = false;
-            this.gameItems = [];
-            this.isGameItemRevealed = false;
-        });
+        this.loadData();
     }
 
     onNextClick(): void {
         this.isGameItemRevealed = false;
         this.currentGameItemIndex++;
         if (this.currentGameItemIndex === this.gameItems.length) {
-            this.currentGameItemIndex = 0;
-            this.isGameStarted = false;
-            this.gameItems = [];
+            this.loadData();
         }
     }
 

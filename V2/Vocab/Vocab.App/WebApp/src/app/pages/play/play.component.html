@@ -1,6 +1,6 @@
 <div fxLayout="row" class="play-container">
-    <div fxFlex="75" class="play-section">
-        <div *ngIf="isGameStarted" fxLayout="column" fxLayoutAlign="space-around center">
+    <div *ngIf="isGameStarted" fxFlex="75" class="play-section">
+        <div fxLayout="column" fxLayoutAlign="space-around center">
             <h1>{{gameItems[currentGameItemIndex].value1}}</h1>
             <div style="height: 20px;"></div>
             <h4 class="reveal-text">
@@ -35,16 +35,12 @@
             <div style="height: 40px;"></div>
             <button class="play-button" color="warn" mat-button (click)="onLeaveClick()">Leave</button>
         </div>
-        <div *ngIf="isGameStarted" fxLayout="row" fxLayoutAlign="end end" class="count-section">
+        <div fxLayout="row" fxLayoutAlign="end end" class="count-section">
             <p>{{currentGameItemIndex + 1}}/{{gameItems.length}}</p>
         </div>
-        <div *ngIf="!isGameStarted">
-            <div style="height: 100px;"></div>
-            <span class="game-placeholder-text">Setting up game...</span>
-        </div>
     </div>
-    <mat-divider vertical></mat-divider>
-    <div fxFlex="25" class="play-section">
+    <mat-divider *ngIf="isGameStarted" vertical></mat-divider>
+    <div [fxFlex]="isGameStarted ? 25 : 100" class="play-section">
         <div fxLayout="column" fxLayoutAlign="space-around center">
             <p>Game settings</p>
             <div style="height: 30px;"></div>
