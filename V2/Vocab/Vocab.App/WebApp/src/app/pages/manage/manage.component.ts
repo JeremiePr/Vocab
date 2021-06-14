@@ -46,9 +46,9 @@ interface Filters {
 })
 export class ManageComponent implements OnInit, AfterViewInit {
 
-    @ViewChild(MatSort) sort!: MatSort;
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
-    @ViewChild('inputCreateKey') inputCreateKey !: ElementRef;
+    @ViewChild(MatSort) sort: MatSort | null = null;
+    @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
+    @ViewChild('inputCreateKey') inputCreateKey: ElementRef | null = null;
 
     dataSource = new MatTableDataSource<Row>();
     displayedColumns = DISPLAYED_COLUMNS;
@@ -169,7 +169,7 @@ export class ManageComponent implements OnInit, AfterViewInit {
             }));
             this.dataSource._updateChangeSubscription();
             this.eventService.stopProgressBarEvent.emit();
-            this.inputCreateKey.nativeElement.focus();
+            this.inputCreateKey?.nativeElement.focus();
         });
     }
 

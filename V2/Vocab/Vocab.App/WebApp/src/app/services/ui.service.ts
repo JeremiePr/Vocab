@@ -5,8 +5,8 @@ import { Injectable, Renderer2 } from '@angular/core';
 })
 export class UiService {
 
-    private document!: Document;
-    private renderer!: Renderer2;
+    private document: Document | null = null;
+    private renderer: Renderer2 | null = null;
 
     initialize(document: Document, renderer: Renderer2) {
         this.document = document;
@@ -25,11 +25,11 @@ export class UiService {
 
     setDarkTheme(): void {
         localStorage.setItem('vocab-app-theme', 'dark');
-        this.renderer.setAttribute(this.document.body, 'class', 'theme-dark');
+        this.renderer?.setAttribute(this.document?.body, 'class', 'theme-dark');
     }
 
     setLightTheme(): void {
         localStorage.setItem('vocab-app-theme', 'light');
-        this.renderer.setAttribute(this.document.body, 'class', 'theme-light');
+        this.renderer?.setAttribute(this.document?.body, 'class', 'theme-light');
     }
 }
