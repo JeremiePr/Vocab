@@ -1,4 +1,4 @@
-<div fxLayout="row" class="play-container">
+<div fxLayout="row" class="play-container" [ngStyle]="{ 'display': isReady ? 'flex' : 'none' }">
     <div *ngIf="isGameStarted" fxFlex="75" class="play-section">
         <div fxLayout="column" fxLayoutAlign="space-around center">
             <h1>{{gameItems[currentGameItemIndex].value1}}</h1>

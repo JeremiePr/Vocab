@@ -5,6 +5,7 @@ import { GameItem } from '../../models/game-item';
 import { Importancy } from '../../models/importancy';
 import { Direction } from '../../models/direction';
 import { ImportancyFilter } from '../../models/importancy-filter';
+import { EventService } from '../../services/event.service';
 
 const IMPORTANCY_LEVELS = [
     { value: 1, text: 'Low' },
@@ -46,13 +47,14 @@ export class PlayComponent implements OnInit {
     isGameItemRevealed = false;
     wordCount = 0;
 
-    constructor(private wordService: WordService) { }
+    constructor(private wordService: WordService, private eventService: EventService) { }
 
     ngOnInit(): void {
         this.loadData();
     }
 
     loadData(): void {
+        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.get('')
         .subscribe(words => {
             this.words = words;
@@ -61,6 +63,7 @@ export class PlayComponent implements OnInit {
             this.gameItems = [];
             this.isGameItemRevealed = false;
             this.onSelectedImportancyChange();
+            this.eventService.stopProgressBarEvent.emit();
             this.isReady = true;
         });
     }
