@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, OnInit, OnDestroy, Inject, Renderer2 } from '@angular/core';
+import { Component, Inject, Renderer2 } from '@angular/core';
 import { UiService } from './services/ui.service';
 
 @Component({
@@ -7,9 +7,10 @@ import { UiService } from './services/ui.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.sass']
 })
-export class AppComponent {
-
-    constructor(@Inject(DOCUMENT) private document: Document, private renderer: Renderer2, private uiService: UiService) {
+export class AppComponent
+{
+    constructor(@Inject(DOCUMENT) private document: Document, private renderer: Renderer2, private uiService: UiService)
+    {
         this.uiService.initialize(this.document, this.renderer);
     }
 }

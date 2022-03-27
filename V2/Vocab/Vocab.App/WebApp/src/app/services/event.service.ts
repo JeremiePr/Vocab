@@ -10,7 +10,8 @@ class EventContainer<T> {
 @Injectable({
     providedIn: 'root'
 })
-export class EventService {
-    startProgressBarEvent = new EventContainer<{ mode: 'determinate'|'indeterminate', value: number }>();
+export class EventService
+{
+    startProgressBarEvent = new EventContainer<{ mode: 'determinate' | 'indeterminate', value: number }>();
     stopProgressBarEvent = new EventContainer<void>();
 }

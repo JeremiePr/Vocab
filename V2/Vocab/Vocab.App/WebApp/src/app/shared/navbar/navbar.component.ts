@@ -6,21 +6,25 @@ import { UiService } from '../../services/ui.service';
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.sass']
 })
-export class NavbarComponent implements OnInit {
-
+export class NavbarComponent implements OnInit
+{
     themeToggle = false;
 
     constructor(private uiService: UiService) { }
 
-    ngOnInit(): void {
+    ngOnInit(): void
+    {
         this.themeToggle = this.uiService.isDarkTheme();
     }
 
-    onChangeThemeToggle(): void {
-        if (this.themeToggle) {
+    onChangeThemeToggle(): void
+    {
+        if (this.themeToggle)
+        {
             this.uiService.setDarkTheme();
         }
-        else {
+        else
+        {
             this.uiService.setLightTheme();
         }
     }

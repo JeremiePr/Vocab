@@ -32,8 +32,8 @@ const DIRECTIONS = [
     templateUrl: './play.component.html',
     styleUrls: ['./play.component.sass']
 })
-export class PlayComponent implements OnInit {
-
+export class PlayComponent implements OnInit
+{
     words: Array<Word> = [];
     gameItems: Array<GameItem> = [];
     importancyLevels = IMPORTANCY_LEVELS;
@@ -49,30 +49,36 @@ export class PlayComponent implements OnInit {
 
     constructor(private wordService: WordService, private eventService: EventService) { }
 
-    ngOnInit(): void {
+    ngOnInit(): void
+    {
         this.loadData();
     }
 
-    loadData(): void {
+    loadData(): void
+    {
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.get('')
-        .subscribe(words => {
-            this.words = words;
-            this.currentGameItemIndex = 0;
-            this.isGameStarted = false;
-            this.gameItems = [];
-            this.isGameItemRevealed = false;
-            this.onSelectedImportancyChange();
-            this.eventService.stopProgressBarEvent.emit();
-            this.isReady = true;
-        });
+            .subscribe(words =>
+            {
+                this.words = words;
+                this.currentGameItemIndex = 0;
+                this.isGameStarted = false;
+                this.gameItems = [];
+                this.isGameItemRevealed = false;
+                this.onSelectedImportancyChange();
+                this.eventService.stopProgressBarEvent.emit();
+                this.isReady = true;
+            });
     }
 
-    generateWordsGame(): void {
+    generateWordsGame(): void
+    {
         this.gameItems = [];
         const gameItems: Array<GameItem> = [];
-        for (const word of this.words.filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy))) {
-            switch (this.selectedDirection) {
+        for (const word of this.words.filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy)))
+        {
+            switch (this.selectedDirection)
+            {
                 case Direction.Normal:
                     gameItems.push({ wordId: word.id, value1: word.key, value2: word.value, importancy: word.importancy });
                     break;
@@ -91,9 +97,11 @@ export class PlayComponent implements OnInit {
         let n = gameItems.length;
         let i = 0;
 
-        while (n > 0) {
+        while (n > 0)
+        {
             i = Math.floor(Math.random() * gameItems.length);
-            if (i in gameItems) {
+            if (i in gameItems)
+            {
                 this.gameItems.push(gameItems[i]);
                 delete gameItems[i];
                 n--;
@@ -101,47 +109,56 @@ export class PlayComponent implements OnInit {
         }
     }
 
-    onPlayClick(): void {
+    onPlayClick(): void
+    {
         this.currentGameItemIndex = 0;
         this.generateWordsGame();
         this.isGameStarted = true;
     }
 
-    onLeaveClick(): void {
+    onLeaveClick(): void
+    {
         this.loadData();
     }
 
-    onNextClick(): void {
+    onNextClick(): void
+    {
         this.isGameItemRevealed = false;
         this.currentGameItemIndex++;
-        if (this.currentGameItemIndex === this.gameItems.length) {
+        if (this.currentGameItemIndex === this.gameItems.length)
+        {
             this.loadData();
         }
     }
 
-    onWordImportancyChange(gameItem: GameItem): void {
+    onWordImportancyChange(gameItem: GameItem): void
+    {
         const word = this.words.filter(x => x.id === gameItem.wordId)[0];
-        if (!word) {
+        if (!word)
+        {
             return;
         }
         const wordEdit: Word = { id: word.id, key: word.key, value: word.value, notes: word.notes, importancy: gameItem.importancy };
         this.wordService.update(wordEdit).subscribe();
     }
 
-    onSelectedImportancyChange(): void {
+    onSelectedImportancyChange(): void
+    {
         this.wordCount = this.words
             .filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy))
             .length;
     }
 
-    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean {
-        switch (referenceImportancy) {
+    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
+    {
+        switch (referenceImportancy)
+        {
             case ImportancyFilter.All: return true;
             case ImportancyFilter.MediumHigh: return word.importancy >= Importancy.Medium;
             case ImportancyFilter.HighOnly: return word.importancy === Importancy.High;
             case ImportancyFilter.MediumOnly: return word.importancy === Importancy.Medium;
             case ImportancyFilter.LowOnly: return word.importancy === Importancy.Low;
             default: return true
-        } 
+        }
     }
 }

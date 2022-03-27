@@ -27,14 +27,16 @@ const DISPLAYED_COLUMNS = ['key', 'value', 'notes', 'importancy', 'actions'];
 
 const DEFAULT_IMPORTANCY_LEVEL_FILTER = ImportancyFilter.All;
 
-interface Row {
+interface Row
+{
     word: Word;
     referenceFields: { key: string, value: string, notes: string, importancy: Importancy };
     index: number;
     isModified: boolean;
 }
 
-interface Filters {
+interface Filters
+{
     search: string;
     importancy: ImportancyFilter;
 }
@@ -44,8 +46,8 @@ interface Filters {
     templateUrl: './manage.component.html',
     styleUrls: ['./manage.component.sass']
 })
-export class ManageComponent implements OnInit, AfterViewInit {
-
+export class ManageComponent implements OnInit, AfterViewInit
+{
     @ViewChild(MatSort) sort: MatSort | null = null;
     @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
     @ViewChild('inputCreateKey') inputCreateKey: ElementRef | null = null;
@@ -64,17 +66,22 @@ export class ManageComponent implements OnInit, AfterViewInit {
 
     constructor(private wordService: WordService, private eventService: EventService) { }
 
-    ngOnInit(): void {
+    ngOnInit(): void
+    {
         this.loadData();
     }
 
-    ngAfterViewInit(): void {
+    ngAfterViewInit(): void
+    {
         this.initDataSource();
     }
 
-    initDataSource(): void {
-        this.dataSource.filterPredicate = (row: Row, filtersString: string) => {
-            if (this.currentEditionRow) {
+    initDataSource(): void
+    {
+        this.dataSource.filterPredicate = (row: Row, filtersString: string) =>
+        {
+            if (this.currentEditionRow)
+            {
                 this.onResetClick(this.currentEditionRow);
             }
             const filters: Filters = { search: JSON.parse(filtersString).search, importancy: JSON.parse(filtersString).importancy };
@@ -82,10 +89,12 @@ export class ManageComponent implements OnInit, AfterViewInit {
                 this.isWordMatchingImportancyFilter(row.word, +filters.importancy);
         };
         this.dataSource.sort = this.sort;
-        this.dataSource.sortData = (data: Array<Row>, sort: MatSort) => {
+        this.dataSource.sortData = (data: Array<Row>, sort: MatSort) =>
+        {
             let compareValue = 0;
             let column = sort.active;
-            switch (sort.direction) {
+            switch (sort.direction)
+            {
                 case 'asc':
                     compareValue = 1;
                     break;
@@ -97,7 +106,8 @@ export class ManageComponent implements OnInit, AfterViewInit {
                     compareValue = -1;
                     break;
             }
-            switch (column) {
+            switch (column)
+            {
                 case 'key':
                     return data.sort((a, b) => a.word.key.toLowerCase() > b.word.key.toLowerCase() ? compareValue : -compareValue);
                 case 'value':
@@ -111,40 +121,46 @@ export class ManageComponent implements OnInit, AfterViewInit {
         this.dataSource.paginator = this.paginator;
     }
 
-    loadData(): void {
+    loadData(): void
+    {
         this.isLoading = true;
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.get('')
-        .subscribe(words => {
-            this.dataSource.data = words.map((word: Word, index: number) => ({
-                word,
-                referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                index,
-                isModified: false
-            }));
-            this.dataSource._updateChangeSubscription();
-            this.eventService.stopProgressBarEvent.emit();
-            this.onFilterChange();
-            this.isReady = true;
-            this.isLoading = false;
-        });
+            .subscribe(words =>
+            {
+                this.dataSource.data = words.map((word: Word, index: number) => ({
+                    word,
+                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                    index,
+                    isModified: false
+                }));
+                this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
+                this.onFilterChange();
+                this.isReady = true;
+                this.isLoading = false;
+            });
     }
 
-    onFilterChange(): void {
+    onFilterChange(): void
+    {
         this.dataSource.filter = JSON.stringify(this.filters);
         this.dataSource.paginator?.firstPage();
     }
 
-    onCellHover(rowIndex: number, columnName: string): void {
+    onCellHover(rowIndex: number, columnName: string): void
+    {
         this.focusedRowIndex = rowIndex;
         this.focusedColumnName = columnName;
     }
 
-    onSearchClick(): void {
+    onSearchClick(): void
+    {
         this.loadData();
     }
 
-    onResetClick(row: Row): void {
+    onResetClick(row: Row): void
+    {
         row.word.key = row.referenceFields.key;
         row.word.value = row.referenceFields.value;
         row.word.notes = row.referenceFields.notes;
@@ -153,131 +169,153 @@ export class ManageComponent implements OnInit, AfterViewInit {
         this.currentEditionRow = null;
     }
 
-    onAddClick(): void {
+    onAddClick(): void
+    {
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.create(this.wordCreate)
-        .pipe(
-            tap(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
-            switchMap(_ => this.wordService.get(''))
-        )
-        .subscribe(words => {
-            this.dataSource.data = words.map((word: Word, index: number) => ({
-                word,
-                referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                index,
-                isModified: false
-            }));
-            this.dataSource._updateChangeSubscription();
-            this.eventService.stopProgressBarEvent.emit();
-            this.inputCreateKey?.nativeElement.focus();
-        });
+            .pipe(
+                tap(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
+                switchMap(_ => this.wordService.get(''))
+            )
+            .subscribe(words =>
+            {
+                this.dataSource.data = words.map((word: Word, index: number) => ({
+                    word,
+                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                    index,
+                    isModified: false
+                }));
+                this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
+                this.inputCreateKey?.nativeElement.focus();
+            });
     }
 
-    onEnterAddKeyPress(): void {
-        if (this.isWordCreateValid()) {
+    onEnterAddKeyPress(): void
+    {
+        if (this.isWordCreateValid())
+        {
             this.onAddClick();
         }
     }
 
-    onSaveClick(row: Row): void {
+    onSaveClick(row: Row): void
+    {
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.update(row.word)
-        .pipe(
-            tap(w => {
-                row.word.key = w.key;
-                row.word.value = w.value;
-                row.word.notes = w.notes;
-                row.word.importancy = w.importancy;
-                row.referenceFields = { key: w.key, value: w.value, notes: w.notes, importancy: w.importancy };
-                row.isModified = false;
-                this.currentEditionRow = null;
-            }),
-            switchMap(() => this.wordService.get(''))
-        )
-        .subscribe(words => {
-            this.dataSource.data = words.map((word: Word, index: number) => ({
-                word,
-                referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                index,
-                isModified: false
-            }));
-            this.dataSource._updateChangeSubscription();
-            this.eventService.stopProgressBarEvent.emit();
-        });
+            .pipe(
+                tap(w =>
+                {
+                    row.word.key = w.key;
+                    row.word.value = w.value;
+                    row.word.notes = w.notes;
+                    row.word.importancy = w.importancy;
+                    row.referenceFields = { key: w.key, value: w.value, notes: w.notes, importancy: w.importancy };
+                    row.isModified = false;
+                    this.currentEditionRow = null;
+                }),
+                switchMap(() => this.wordService.get(''))
+            )
+            .subscribe(words =>
+            {
+                this.dataSource.data = words.map((word: Word, index: number) => ({
+                    word,
+                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                    index,
+                    isModified: false
+                }));
+                this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
+            });
     }
 
-    onEnterSaveKeyPress(row: Row): void {
-        if (this.isWordValid(row.word)) {
+    onEnterSaveKeyPress(row: Row): void
+    {
+        if (this.isWordValid(row.word))
+        {
             this.onSaveClick(row);
         }
     }
 
-    onDeleteClick(row: Row): void {
+    onDeleteClick(row: Row): void
+    {
         this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this.wordService.delete(row.word.id)
-        .pipe(
-            switchMap(() => this.wordService.get(''))
-        )
-        .subscribe(words => {
-            this.dataSource.data = words.map((word: Word, index: number) => ({
-                word,
-                referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                index,
-                isModified: false
-            }));
-            this.dataSource._updateChangeSubscription();
-            this.eventService.stopProgressBarEvent.emit();
-        });
+            .pipe(
+                switchMap(() => this.wordService.get(''))
+            )
+            .subscribe(words =>
+            {
+                this.dataSource.data = words.map((word: Word, index: number) => ({
+                    word,
+                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                    index,
+                    isModified: false
+                }));
+                this.dataSource._updateChangeSubscription();
+                this.eventService.stopProgressBarEvent.emit();
+            });
     }
 
-    onRowChange(row: Row): void {
+    onRowChange(row: Row): void
+    {
         const editWord = row.word;
         const ref = row.referenceFields;
         row.isModified = editWord.key !== ref.key || editWord.value !== ref.value || editWord.notes !== ref.notes || editWord.importancy !== ref.importancy;
-        if (this.currentEditionRow && row !== this.currentEditionRow) {
+        if (this.currentEditionRow && row !== this.currentEditionRow)
+        {
             this.onResetClick(this.currentEditionRow);
         }
-        if (row.isModified) {
+        if (row.isModified)
+        {
             this.currentEditionRow = row;
         }
     }
 
-    onClearSearchClick(): void {
+    onClearSearchClick(): void
+    {
         this.filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
         this.onFilterChange();
     }
 
-    onClearAddClick(): void {
+    onClearAddClick(): void
+    {
         this.wordCreate.key = '';
         this.wordCreate.value = '';
         this.wordCreate.notes = '';
         this.wordCreate.importancy = Importancy.High;
     }
 
-    isFiltersModified(): boolean {
+    isFiltersModified(): boolean
+    {
         return this.filters.search !== '' || this.filters.importancy !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
     }
 
-    isWordCreateModified(): boolean {
+    isWordCreateModified(): boolean
+    {
         return this.wordCreate.key !== '' || this.wordCreate.value !== '' || this.wordCreate.notes !== '' || this.wordCreate.importancy !== Importancy.High;
     }
 
-    isWordCreateValid(): boolean {
+    isWordCreateValid(): boolean
+    {
         return this.wordCreate.key !== '' && this.wordCreate.value !== '';
     }
 
-    isWordValid(word: Word): boolean {
+    isWordValid(word: Word): boolean
+    {
         return word.key !== '' && word.value !== '';
     }
 
-    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean {
-        switch (referenceImportancy) {
+    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
+    {
+        switch (referenceImportancy)
+        {
             case ImportancyFilter.All: return true;
             case ImportancyFilter.MediumHigh: return word.importancy >= Importancy.Medium;
             case ImportancyFilter.HighOnly: return word.importancy === Importancy.High;
             case ImportancyFilter.MediumOnly: return word.importancy === Importancy.Medium;
             case ImportancyFilter.LowOnly: return word.importancy === Importancy.Low;
             default: return true
-        } 
+        }
     }
 }
