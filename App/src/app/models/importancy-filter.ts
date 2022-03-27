@@ -1,4 +1,5 @@
-export enum ImportancyFilter {
+export enum ImportancyFilter
+{
     All = 1,
     MediumHigh = 2,
     HighOnly = 3,
