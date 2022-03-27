@@ -8,7 +8,7 @@ export class UiService
     private document: Document | null = null;
     private renderer: Renderer2 | null = null;
 
-    initialize(document: Document, renderer: Renderer2)
+    public initialize(document: Document, renderer: Renderer2)
     {
         this.document = document;
         this.renderer = renderer;
@@ -22,18 +22,18 @@ export class UiService
         }
     }
 
-    isDarkTheme(): boolean
+    public isDarkTheme(): boolean
     {
         return localStorage.getItem('vocab-app-theme') === 'dark';
     }
 
-    setDarkTheme(): void
+    public setDarkTheme(): void
     {
         localStorage.setItem('vocab-app-theme', 'dark');
         this.renderer?.setAttribute(this.document?.body, 'class', 'theme-dark');
     }
 
-    setLightTheme(): void
+    public setLightTheme(): void
     {
         localStorage.setItem('vocab-app-theme', 'light');
         this.renderer?.setAttribute(this.document?.body, 'class', 'theme-light');

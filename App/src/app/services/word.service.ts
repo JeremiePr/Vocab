@@ -11,35 +11,35 @@ const baseUrl = environment.baseUrl + "/Word"
 })
 export class WordService
 {
-    constructor(private http: HttpClient) { }
+    public constructor(private readonly _http: HttpClient) { }
 
-    get(search: string): Observable<Array<Word>>
+    public get(search: string): Observable<Array<Word>>
     {
-        return this.http.get<Array<Word>>(baseUrl, {
+        return this._http.get<Array<Word>>(baseUrl, {
             params: {
                 search
             }
         });
     }
 
-    getOneById(id: number): Observable<Word>
+    public getOneById(id: number): Observable<Word>
     {
-        return this.http.get<Word>(baseUrl + "/" + id);
+        return this._http.get<Word>(baseUrl + "/" + id);
     }
 
-    create(word: Word): Observable<Word>
+    public create(word: Word): Observable<Word>
     {
-        return this.http.post<Word>(baseUrl, word);
+        return this._http.post<Word>(baseUrl, word);
     }
 
-    update(word: Word): Observable<Word>
+    public update(word: Word): Observable<Word>
     {
-        return this.http.put<Word>(baseUrl, word);
+        return this._http.put<Word>(baseUrl, word);
     }
 
-    delete(id: number): Observable<void>
+    public delete(id: number): Observable<void>
     {
-        return this.http.delete<void>(baseUrl, {
+        return this._http.delete<void>(baseUrl, {
             params: {
                 id: id.toString()
             }

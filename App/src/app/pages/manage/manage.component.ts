@@ -48,41 +48,43 @@ interface Filters
 })
 export class ManageComponent implements OnInit, AfterViewInit
 {
-    @ViewChild(MatSort) sort: MatSort | null = null;
-    @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-    @ViewChild('inputCreateKey') inputCreateKey: ElementRef | null = null;
+    @ViewChild(MatSort) public readonly sort: MatSort | null = null;
+    @ViewChild(MatPaginator) public readonly paginator: MatPaginator | null = null;
+    @ViewChild('inputCreateKey') public readonly inputCreateKey: ElementRef | null = null;
 
-    dataSource = new MatTableDataSource<Row>();
-    displayedColumns = DISPLAYED_COLUMNS;
-    importancyLevels = IMPORTANCY_LEVELS;
-    importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
-    focusedRowIndex = 0;
-    focusedColumnName = '';
-    isReady = false;
-    isLoading = false;
-    filters: Filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
-    wordCreate: Word = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High };
-    currentEditionRow: Row | null = null;
+    public readonly dataSource = new MatTableDataSource<Row>();
+    public readonly displayedColumns = DISPLAYED_COLUMNS;
+    public readonly importancyLevels = IMPORTANCY_LEVELS;
+    public readonly importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
 
-    constructor(private wordService: WordService, private eventService: EventService) { }
+    public isReady = false;
+    public isLoading = false;
+    public filters: Filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
+    public wordCreate: Word = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High };
 
-    ngOnInit(): void
+    private _currentEditionRow: Row | null = null;
+
+    public constructor(
+        private readonly _wordService: WordService,
+        private readonly _eventService: EventService) { }
+
+    public ngOnInit(): void
     {
         this.loadData();
     }
 
-    ngAfterViewInit(): void
+    public ngAfterViewInit(): void
     {
         this.initDataSource();
     }
 
-    initDataSource(): void
+    public initDataSource(): void
     {
         this.dataSource.filterPredicate = (row: Row, filtersString: string) =>
         {
-            if (this.currentEditionRow)
+            if (this._currentEditionRow)
             {
-                this.onResetClick(this.currentEditionRow);
+                this.onResetClick(this._currentEditionRow);
             }
             const filters: Filters = { search: JSON.parse(filtersString).search, importancy: JSON.parse(filtersString).importancy };
             return (row.word.key.toLowerCase().includes(filters.search) || row.word.value.toLowerCase().includes(filters.search)) &&
@@ -121,11 +123,11 @@ export class ManageComponent implements OnInit, AfterViewInit
         this.dataSource.paginator = this.paginator;
     }
 
-    loadData(): void
+    public loadData(): void
     {
         this.isLoading = true;
-        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this.wordService.get('')
+        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
+        this._wordService.get('')
             .subscribe(words =>
             {
                 this.dataSource.data = words.map((word: Word, index: number) => ({
@@ -135,47 +137,41 @@ export class ManageComponent implements OnInit, AfterViewInit
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
-                this.eventService.stopProgressBarEvent.emit();
+                this._eventService.stopProgressBarEvent.emit();
                 this.onFilterChange();
                 this.isReady = true;
                 this.isLoading = false;
             });
     }
 
-    onFilterChange(): void
+    public onFilterChange(): void
     {
         this.dataSource.filter = JSON.stringify(this.filters);
         this.dataSource.paginator?.firstPage();
     }
 
-    onCellHover(rowIndex: number, columnName: string): void
-    {
-        this.focusedRowIndex = rowIndex;
-        this.focusedColumnName = columnName;
-    }
-
-    onSearchClick(): void
+    public onSearchClick(): void
     {
         this.loadData();
     }
 
-    onResetClick(row: Row): void
+    public onResetClick(row: Row): void
     {
         row.word.key = row.referenceFields.key;
         row.word.value = row.referenceFields.value;
         row.word.notes = row.referenceFields.notes;
         row.word.importancy = row.referenceFields.importancy;
         row.isModified = false;
-        this.currentEditionRow = null;
+        this._currentEditionRow = null;
     }
 
-    onAddClick(): void
+    public onAddClick(): void
     {
-        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this.wordService.create(this.wordCreate)
+        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
+        this._wordService.create(this.wordCreate)
             .pipe(
                 tap(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
-                switchMap(_ => this.wordService.get(''))
+                switchMap(_ => this._wordService.get(''))
             )
             .subscribe(words =>
             {
@@ -186,12 +182,12 @@ export class ManageComponent implements OnInit, AfterViewInit
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
-                this.eventService.stopProgressBarEvent.emit();
+                this._eventService.stopProgressBarEvent.emit();
                 this.inputCreateKey?.nativeElement.focus();
             });
     }
 
-    onEnterAddKeyPress(): void
+    public onEnterAddKeyPress(): void
     {
         if (this.isWordCreateValid())
         {
@@ -199,10 +195,10 @@ export class ManageComponent implements OnInit, AfterViewInit
         }
     }
 
-    onSaveClick(row: Row): void
+    public onSaveClick(row: Row): void
     {
-        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this.wordService.update(row.word)
+        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
+        this._wordService.update(row.word)
             .pipe(
                 tap(w =>
                 {
@@ -212,9 +208,9 @@ export class ManageComponent implements OnInit, AfterViewInit
                     row.word.importancy = w.importancy;
                     row.referenceFields = { key: w.key, value: w.value, notes: w.notes, importancy: w.importancy };
                     row.isModified = false;
-                    this.currentEditionRow = null;
+                    this._currentEditionRow = null;
                 }),
-                switchMap(() => this.wordService.get(''))
+                switchMap(() => this._wordService.get(''))
             )
             .subscribe(words =>
             {
@@ -225,11 +221,11 @@ export class ManageComponent implements OnInit, AfterViewInit
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
-                this.eventService.stopProgressBarEvent.emit();
+                this._eventService.stopProgressBarEvent.emit();
             });
     }
 
-    onEnterSaveKeyPress(row: Row): void
+    public onEnterSaveKeyPress(row: Row): void
     {
         if (this.isWordValid(row.word))
         {
@@ -237,12 +233,12 @@ export class ManageComponent implements OnInit, AfterViewInit
         }
     }
 
-    onDeleteClick(row: Row): void
+    public onDeleteClick(row: Row): void
     {
-        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this.wordService.delete(row.word.id)
+        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
+        this._wordService.delete(row.word.id)
             .pipe(
-                switchMap(() => this.wordService.get(''))
+                switchMap(() => this._wordService.get(''))
             )
             .subscribe(words =>
             {
@@ -253,32 +249,32 @@ export class ManageComponent implements OnInit, AfterViewInit
                     isModified: false
                 }));
                 this.dataSource._updateChangeSubscription();
-                this.eventService.stopProgressBarEvent.emit();
+                this._eventService.stopProgressBarEvent.emit();
             });
     }
 
-    onRowChange(row: Row): void
+    public onRowChange(row: Row): void
     {
         const editWord = row.word;
         const ref = row.referenceFields;
         row.isModified = editWord.key !== ref.key || editWord.value !== ref.value || editWord.notes !== ref.notes || editWord.importancy !== ref.importancy;
-        if (this.currentEditionRow && row !== this.currentEditionRow)
+        if (this._currentEditionRow && row !== this._currentEditionRow)
         {
-            this.onResetClick(this.currentEditionRow);
+            this.onResetClick(this._currentEditionRow);
         }
         if (row.isModified)
         {
-            this.currentEditionRow = row;
+            this._currentEditionRow = row;
         }
     }
 
-    onClearSearchClick(): void
+    public onClearSearchClick(): void
     {
         this.filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
         this.onFilterChange();
     }
 
-    onClearAddClick(): void
+    public onClearAddClick(): void
     {
         this.wordCreate.key = '';
         this.wordCreate.value = '';
@@ -286,27 +282,27 @@ export class ManageComponent implements OnInit, AfterViewInit
         this.wordCreate.importancy = Importancy.High;
     }
 
-    isFiltersModified(): boolean
+    public isFiltersModified(): boolean
     {
         return this.filters.search !== '' || this.filters.importancy !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
     }
 
-    isWordCreateModified(): boolean
+    public isWordCreateModified(): boolean
     {
         return this.wordCreate.key !== '' || this.wordCreate.value !== '' || this.wordCreate.notes !== '' || this.wordCreate.importancy !== Importancy.High;
     }
 
-    isWordCreateValid(): boolean
+    public isWordCreateValid(): boolean
     {
         return this.wordCreate.key !== '' && this.wordCreate.value !== '';
     }
 
-    isWordValid(word: Word): boolean
+    public isWordValid(word: Word): boolean
     {
         return word.key !== '' && word.value !== '';
     }
 
-    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
+    public isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
     {
         switch (referenceImportancy)
         {

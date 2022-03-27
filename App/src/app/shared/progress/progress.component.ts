@@ -10,21 +10,22 @@ import { takeWhile } from 'rxjs/operators';
 })
 export class ProgressComponent implements OnInit, OnDestroy
 {
-    isAlive = true;
-    isActive = false;
-    mode: ProgressBarMode = 'indeterminate';
-    value = 0;
+    public isActive = false;
+    public mode: ProgressBarMode = 'indeterminate';
+    public value = 0;
 
-    constructor(private eventService: EventService) { }
+    private isAlive = true;
 
-    ngOnInit(): void
+    public constructor(private readonly _eventService: EventService) { }
+
+    public ngOnInit(): void
     {
         this.subscribeEvents();
     }
 
-    subscribeEvents(): void
+    public subscribeEvents(): void
     {
-        this.eventService.startProgressBarEvent.event
+        this._eventService.startProgressBarEvent.event
             .pipe(takeWhile(_ => this.isAlive))
             .subscribe(container =>
             {
@@ -32,7 +33,7 @@ export class ProgressComponent implements OnInit, OnDestroy
                 this.mode = container.mode;
                 this.value = container.value;
             });
-        this.eventService.stopProgressBarEvent.event
+        this._eventService.stopProgressBarEvent.event
             .pipe(takeWhile(_ => this.isActive))
             .subscribe(() =>
             {
@@ -42,7 +43,7 @@ export class ProgressComponent implements OnInit, OnDestroy
             });
     }
 
-    ngOnDestroy(): void
+    public ngOnDestroy(): void
     {
         this.isAlive = false;
     }

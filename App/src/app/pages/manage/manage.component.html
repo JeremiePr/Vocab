@@ -53,7 +53,7 @@
     <table mat-table [dataSource]="dataSource" matSort fixedLayout>
         <ng-container matColumnDef="key">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Key</th>
-            <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'key')">
+            <td mat-cell *matCellDef="let row">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.key" (ngModelChange)="onRowChange(row)"
                         spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
@@ -63,7 +63,7 @@
         </ng-container>
         <ng-container matColumnDef="value">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Value</th>
-            <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'value')">
+            <td mat-cell *matCellDef="let row">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.value" (ngModelChange)="onRowChange(row)"
                         spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
@@ -73,7 +73,7 @@
         </ng-container>
         <ng-container matColumnDef="notes">
             <th mat-header-cell *matHeaderCellDef>Notes</th>th>
-            <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'notes')">
+            <td mat-cell *matCellDef="let row">
                 <mat-form-field class="no-underline">
                     <input type="text" matInput [(ngModel)]="row.word.notes" (ngModelChange)="onRowChange(row)"
                         spellcheck="false" autocomplete="off" [ngClass]="{ 'text-edition': row.isModified}"
@@ -83,7 +83,7 @@
         </ng-container>
         <ng-container matColumnDef="importancy">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Importancy</th>th>
-            <td mat-cell *matCellDef="let row" (mouseover)="onCellHover(row.index, 'importancy')">
+            <td mat-cell *matCellDef="let row">
                 <mat-form-field>
                     <mat-select [(ngModel)]="row.word.importancy" (ngModelChange)="onRowChange(row)"
                         [ngClass]="{ 'text-edition': row.isModified}" color="accent">

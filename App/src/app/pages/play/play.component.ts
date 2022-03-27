@@ -34,48 +34,49 @@ const DIRECTIONS = [
 })
 export class PlayComponent implements OnInit
 {
-    words: Array<Word> = [];
-    gameItems: Array<GameItem> = [];
-    importancyLevels = IMPORTANCY_LEVELS;
-    importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
-    directions = DIRECTIONS;
-    isReady = false;
-    selectedImportancy = ImportancyFilter.HighOnly;
-    selectedDirection = Direction.Normal;
-    currentGameItemIndex = 0;
-    isGameStarted = false;
-    isGameItemRevealed = false;
-    wordCount = 0;
+    public readonly importancyLevels = IMPORTANCY_LEVELS;
+    public readonly importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
+    public readonly directions = DIRECTIONS;
+    public gameItems: Array<GameItem> = [];
+    public isReady = false;
+    public selectedImportancy = ImportancyFilter.HighOnly;
+    public selectedDirection = Direction.Normal;
+    public currentGameItemIndex = 0;
+    public isGameStarted = false;
+    public isGameItemRevealed = false;
+    public wordCount = 0;
 
-    constructor(private wordService: WordService, private eventService: EventService) { }
+    private _words: Array<Word> = [];
 
-    ngOnInit(): void
+    public constructor(private readonly _wordService: WordService, private readonly _eventService: EventService) { }
+
+    public ngOnInit(): void
     {
         this.loadData();
     }
 
-    loadData(): void
+    public loadData(): void
     {
-        this.eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this.wordService.get('')
+        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
+        this._wordService.get('')
             .subscribe(words =>
             {
-                this.words = words;
+                this._words = words;
                 this.currentGameItemIndex = 0;
                 this.isGameStarted = false;
                 this.gameItems = [];
                 this.isGameItemRevealed = false;
                 this.onSelectedImportancyChange();
-                this.eventService.stopProgressBarEvent.emit();
+                this._eventService.stopProgressBarEvent.emit();
                 this.isReady = true;
             });
     }
 
-    generateWordsGame(): void
+    public generateWordsGame(): void
     {
         this.gameItems = [];
         const gameItems: Array<GameItem> = [];
-        for (const word of this.words.filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy)))
+        for (const word of this._words.filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy)))
         {
             switch (this.selectedDirection)
             {
@@ -109,19 +110,19 @@ export class PlayComponent implements OnInit
         }
     }
 
-    onPlayClick(): void
+    public onPlayClick(): void
     {
         this.currentGameItemIndex = 0;
         this.generateWordsGame();
         this.isGameStarted = true;
     }
 
-    onLeaveClick(): void
+    public onLeaveClick(): void
     {
         this.loadData();
     }
 
-    onNextClick(): void
+    public onNextClick(): void
     {
         this.isGameItemRevealed = false;
         this.currentGameItemIndex++;
@@ -131,25 +132,25 @@ export class PlayComponent implements OnInit
         }
     }
 
-    onWordImportancyChange(gameItem: GameItem): void
+    public onWordImportancyChange(gameItem: GameItem): void
     {
-        const word = this.words.filter(x => x.id === gameItem.wordId)[0];
+        const word = this._words.filter(x => x.id === gameItem.wordId)[0];
         if (!word)
         {
             return;
         }
         const wordEdit: Word = { id: word.id, key: word.key, value: word.value, notes: word.notes, importancy: gameItem.importancy };
-        this.wordService.update(wordEdit).subscribe();
+        this._wordService.update(wordEdit).subscribe();
     }
 
-    onSelectedImportancyChange(): void
+    public onSelectedImportancyChange(): void
     {
-        this.wordCount = this.words
+        this.wordCount = this._words
             .filter(x => this.isWordMatchingImportancyFilter(x, this.selectedImportancy))
             .length;
     }
 
-    isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
+    public isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
     {
         switch (referenceImportancy)
         {

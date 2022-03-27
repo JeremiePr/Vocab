@@ -12,6 +12,6 @@ class EventContainer<T> {
 })
 export class EventService
 {
-    startProgressBarEvent = new EventContainer<{ mode: 'determinate' | 'indeterminate', value: number }>();
-    stopProgressBarEvent = new EventContainer<void>();
+    public readonly startProgressBarEvent = new EventContainer<{ mode: 'determinate' | 'indeterminate', value: number }>();
+    public readonly stopProgressBarEvent = new EventContainer<void>();
 }
