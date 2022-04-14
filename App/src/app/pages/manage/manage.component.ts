@@ -1,13 +1,16 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Word } from '../../models/word';
-import { WordService } from '../../services/word.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { Importancy } from '../../models/importancy';
-import { tap, switchMap } from 'rxjs/operators';
-import { MatSort } from '@angular/material/sort';
-import { EventService } from '../../services/event.service';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map, withLatestFrom } from 'rxjs/operators';
+import { createWord, deleteWord, getWords, setSearch, updateWord } from 'src/app/store/app.actions';
+import { selectIsLoading, selectSearch, selectWords } from 'src/app/store/app.selectors';
+import { AppState } from 'src/app/store/app.state';
+import { Importancy } from '../../models/importancy';
 import { ImportancyFilter } from '../../models/importancy-filter';
+import { Word } from '../../models/word';
 
 const IMPORTANCY_LEVELS = [
     { value: 1, text: 'Low' },
@@ -46,11 +49,15 @@ interface Filters
     templateUrl: './manage.component.html',
     styleUrls: ['./manage.component.sass']
 })
-export class ManageComponent implements OnInit, AfterViewInit
+export class ManageComponent implements AfterViewInit
 {
     @ViewChild(MatSort) public readonly sort: MatSort | null = null;
     @ViewChild(MatPaginator) public readonly paginator: MatPaginator | null = null;
     @ViewChild('inputCreateKey') public readonly inputCreateKey: ElementRef | null = null;
+
+    public readonly search$: Observable<string>;
+    public readonly words$: Observable<ReadonlyArray<Word>>;
+    public readonly isLoading$: Observable<boolean>;
 
     public readonly dataSource = new MatTableDataSource<Row>();
     public readonly displayedColumns = DISPLAYED_COLUMNS;
@@ -58,19 +65,44 @@ export class ManageComponent implements OnInit, AfterViewInit
     public readonly importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
 
     public isReady = false;
-    public isLoading = false;
-    public filters: Filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
+    public importancy = DEFAULT_IMPORTANCY_LEVEL_FILTER;
     public wordCreate: Word = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High };
 
     private _currentEditionRow: Row | null = null;
 
     public constructor(
-        private readonly _wordService: WordService,
-        private readonly _eventService: EventService) { }
-
-    public ngOnInit(): void
+        private readonly _store: Store<AppState>)
     {
-        this.loadData();
+        this._store.dispatch(getWords({ search: '' }));
+
+        this.search$ = this._store.pipe(
+            select(selectSearch),
+            map(search => search.toLowerCase())
+        );
+
+        this.words$ = this._store.pipe(
+            select(selectWords),
+            withLatestFrom(this.search$),
+            map(([words, search]) =>
+            {
+                this.dataSource.data = words
+                    .filter(word => word.key.toLowerCase().includes(search) || word.value.toLowerCase().includes(search))
+                    .map((word: Word, index: number) => ({
+                        word,
+                        referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
+                        index,
+                        isModified: false
+                    }));
+                this.dataSource._updateChangeSubscription();
+                this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }
+
+                return words;
+            })
+        );
+
+        this.isLoading$ = this._store.pipe(
+            select(selectIsLoading)
+        );
     }
 
     public ngAfterViewInit(): void
@@ -123,36 +155,14 @@ export class ManageComponent implements OnInit, AfterViewInit
         this.dataSource.paginator = this.paginator;
     }
 
-    public loadData(): void
+    public onFilterChange(element: HTMLInputElement): void
     {
-        this.isLoading = true;
-        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this._wordService.get('')
-            .subscribe(words =>
-            {
-                this.dataSource.data = words.map((word: Word, index: number) => ({
-                    word,
-                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                    index,
-                    isModified: false
-                }));
-                this.dataSource._updateChangeSubscription();
-                this._eventService.stopProgressBarEvent.emit();
-                this.onFilterChange();
-                this.isReady = true;
-                this.isLoading = false;
-            });
+        this._store.dispatch(setSearch({ search: element.value }));
     }
 
-    public onFilterChange(): void
+    public onSearchClick(element: HTMLInputElement): void
     {
-        this.dataSource.filter = JSON.stringify(this.filters);
-        this.dataSource.paginator?.firstPage();
-    }
-
-    public onSearchClick(): void
-    {
-        this.loadData();
+        this._store.dispatch(setSearch({ search: element.value }));
     }
 
     public onResetClick(row: Row): void
@@ -167,24 +177,8 @@ export class ManageComponent implements OnInit, AfterViewInit
 
     public onAddClick(): void
     {
-        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this._wordService.create(this.wordCreate)
-            .pipe(
-                tap(_ => this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }),
-                switchMap(_ => this._wordService.get(''))
-            )
-            .subscribe(words =>
-            {
-                this.dataSource.data = words.map((word: Word, index: number) => ({
-                    word,
-                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                    index,
-                    isModified: false
-                }));
-                this.dataSource._updateChangeSubscription();
-                this._eventService.stopProgressBarEvent.emit();
-                this.inputCreateKey?.nativeElement.focus();
-            });
+        this._store.dispatch(createWord({ word: this.wordCreate }));
+        this.inputCreateKey?.nativeElement.focus();
     }
 
     public onEnterAddKeyPress(): void
@@ -197,32 +191,7 @@ export class ManageComponent implements OnInit, AfterViewInit
 
     public onSaveClick(row: Row): void
     {
-        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this._wordService.update(row.word)
-            .pipe(
-                tap(w =>
-                {
-                    row.word.key = w.key;
-                    row.word.value = w.value;
-                    row.word.notes = w.notes;
-                    row.word.importancy = w.importancy;
-                    row.referenceFields = { key: w.key, value: w.value, notes: w.notes, importancy: w.importancy };
-                    row.isModified = false;
-                    this._currentEditionRow = null;
-                }),
-                switchMap(() => this._wordService.get(''))
-            )
-            .subscribe(words =>
-            {
-                this.dataSource.data = words.map((word: Word, index: number) => ({
-                    word,
-                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                    index,
-                    isModified: false
-                }));
-                this.dataSource._updateChangeSubscription();
-                this._eventService.stopProgressBarEvent.emit();
-            });
+        this._store.dispatch(updateWord({ word: row.word }));
     }
 
     public onEnterSaveKeyPress(row: Row): void
@@ -235,22 +204,7 @@ export class ManageComponent implements OnInit, AfterViewInit
 
     public onDeleteClick(row: Row): void
     {
-        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
-        this._wordService.delete(row.word.id)
-            .pipe(
-                switchMap(() => this._wordService.get(''))
-            )
-            .subscribe(words =>
-            {
-                this.dataSource.data = words.map((word: Word, index: number) => ({
-                    word,
-                    referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
-                    index,
-                    isModified: false
-                }));
-                this.dataSource._updateChangeSubscription();
-                this._eventService.stopProgressBarEvent.emit();
-            });
+        this._store.dispatch(deleteWord({ id: row.word.id }));
     }
 
     public onRowChange(row: Row): void
@@ -270,8 +224,8 @@ export class ManageComponent implements OnInit, AfterViewInit
 
     public onClearSearchClick(): void
     {
-        this.filters = { search: '', importancy: DEFAULT_IMPORTANCY_LEVEL_FILTER };
-        this.onFilterChange();
+        this._store.dispatch(setSearch({ search: '' }))
+        this.importancy = DEFAULT_IMPORTANCY_LEVEL_FILTER;
     }
 
     public onClearAddClick(): void
@@ -282,9 +236,9 @@ export class ManageComponent implements OnInit, AfterViewInit
         this.wordCreate.importancy = Importancy.High;
     }
 
-    public isFiltersModified(): boolean
+    public isFiltersModified(search: string): boolean
     {
-        return this.filters.search !== '' || this.filters.importancy !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
+        return search !== '' || this.importancy !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
     }
 
     public isWordCreateModified(): boolean

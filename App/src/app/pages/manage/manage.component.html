@@ -1,22 +1,22 @@
-<div fxLayout="row" fxLayoutAlign="space-between" [ngStyle]="{ 'display': isReady ? 'flex' : 'none' }">
+<div fxLayout="row" fxLayoutAlign="space-between">
     <div fxLayout="row" fxLayoutAlign="start">
         <mat-form-field class="spaced-field">
             <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()" placeholder="search..."
+            <input #inputSearch matInput (input)="onFilterChange(inputSearch)" placeholder="search..."
                 spellcheck="false" autocomplete="off">
         </mat-form-field>
         <mat-form-field class="spaced-field">
             <mat-label>Importancy</mat-label>
-            <mat-select [(ngModel)]="filters.importancy" (ngModelChange)="onFilterChange()">
+            <mat-select [(ngModel)]="importancy" (ngModelChange)="onFilterChange(inputSearch)">
                 <mat-option *ngFor="let levelFilter of importancyLevelsFilters" [value]="levelFilter.value">
                     {{levelFilter.text}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearSearchClick()"
-            [disabled]="!isFiltersModified()">Clear</button>
+        <button *ngIf="search$ | async as search" mat-button style="height: 40px; margin: 8px 10px 4px 20px;"
+            (click)="onClearSearchClick()" [disabled]="!isFiltersModified(search)">Clear</button>
         <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
-            (click)="onSearchClick()" [disabled]="isLoading">Load data</button>
+            (click)="onSearchClick(inputSearch)" [disabled]="isLoading$ | async">Load data</button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end">
         <mat-form-field class="spaced-field">
@@ -48,8 +48,7 @@
             [disabled]="!isWordCreateValid()">Add word</button>
     </div>
 </div>
-<div class="table-container mat-elevation-z8" style="margin-top: 10px;"
-    [ngStyle]="{ 'display': isReady ? 'block' : 'none' }">
+<div class="table-container mat-elevation-z8" style="margin-top: 10px;">
     <table mat-table [dataSource]="dataSource" matSort fixedLayout>
         <ng-container matColumnDef="key">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Key</th>
@@ -115,3 +114,4 @@
     </table>
     <mat-paginator [pageSizeOptions]="[10, 15, 20, 30]" showFirstLastButtons class="paginator-sticky"></mat-paginator>
 </div>
+<ng-container *ngIf="words$ | async"></ng-container>
