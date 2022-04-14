@@ -26,12 +26,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { FlexModule, GridModule, FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { StoreModule } from '@ngrx/store';
-import { appReducers } from 'src/app/app-store-index';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
-import { ManageEffects } from 'src/app/pages/manage/store/manage.effects';
-import { PlayEffects } from 'src/app/pages/play/store/play.effects';
-import { SharedEffects } from 'src/app/shared/store/shared.effects';
+import { appReducers } from 'src/app/store/app.index';
+import { AppEffects } from 'src/app/store/app.effects';
 
 @NgModule({
     declarations: [
@@ -66,7 +64,7 @@ import { SharedEffects } from 'src/app/shared/store/shared.effects';
         MatSlideToggleModule,
         StoreModule.forRoot(appReducers),
         StoreDevtoolsModule.instrument(),
-        EffectsModule.forRoot([ManageEffects, PlayEffects, SharedEffects])
+        EffectsModule.forRoot([AppEffects])
     ],
     providers: [],
     bootstrap: [AppComponent]
