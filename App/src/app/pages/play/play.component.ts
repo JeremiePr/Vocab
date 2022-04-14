@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Word } from '../../models/word';
-import { WordService } from '../../services/word.service';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.state';
+import { Direction } from '../../models/direction';
 import { GameItem } from '../../models/game-item';
 import { Importancy } from '../../models/importancy';
-import { Direction } from '../../models/direction';
 import { ImportancyFilter } from '../../models/importancy-filter';
-import { EventService } from '../../services/event.service';
+import { Word } from '../../models/word';
+import { WordService } from '../../services/word.service';
 
 const IMPORTANCY_LEVELS = [
     { value: 1, text: 'Low' },
@@ -48,7 +49,7 @@ export class PlayComponent implements OnInit
 
     private _words: Array<Word> = [];
 
-    public constructor(private readonly _wordService: WordService, private readonly _eventService: EventService) { }
+    public constructor(private readonly _wordService: WordService, private readonly _store: Store<AppState>) { }
 
     public ngOnInit(): void
     {
@@ -57,7 +58,6 @@ export class PlayComponent implements OnInit
 
     public loadData(): void
     {
-        this._eventService.startProgressBarEvent.emit({ mode: 'indeterminate', value: 0 });
         this._wordService.get('')
             .subscribe(words =>
             {
@@ -67,7 +67,6 @@ export class PlayComponent implements OnInit
                 this.gameItems = [];
                 this.isGameItemRevealed = false;
                 this.onSelectedImportancyChange();
-                this._eventService.stopProgressBarEvent.emit();
                 this.isReady = true;
             });
     }
