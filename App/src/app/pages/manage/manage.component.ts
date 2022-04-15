@@ -1,12 +1,14 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map, withLatestFrom } from 'rxjs/operators';
-import { createWord, deleteWord, getWords, setSearch, updateWord } from 'src/app/store/app.actions';
-import { selectIsLoading, selectSearch, selectWords } from 'src/app/store/app.selectors';
+import { map, tap, withLatestFrom } from 'rxjs/operators';
+import { Filter } from 'src/app/models/filter';
+import { clearFilter, createWord, deleteWord, getWords, setFilter, updateWord } from 'src/app/store/app.actions';
+import { selectFilter, selectIsLoading, selectWords } from 'src/app/store/app.selectors';
 import { AppState } from 'src/app/store/app.state';
 import { Importancy } from '../../models/importancy';
 import { ImportancyFilter } from '../../models/importancy-filter';
@@ -55,7 +57,7 @@ export class ManageComponent implements AfterViewInit
     @ViewChild(MatPaginator) public readonly paginator: MatPaginator | null = null;
     @ViewChild('inputCreateKey') public readonly inputCreateKey: ElementRef | null = null;
 
-    public readonly search$: Observable<string>;
+    public readonly filter$: Observable<Filter>;
     public readonly words$: Observable<ReadonlyArray<Word>>;
     public readonly isLoading$: Observable<boolean>;
 
@@ -64,9 +66,17 @@ export class ManageComponent implements AfterViewInit
     public readonly importancyLevels = IMPORTANCY_LEVELS;
     public readonly importancyLevelsFilters = IMPORTANCY_LEVELS_FILTERS;
 
-    public isReady = false;
-    public importancy = DEFAULT_IMPORTANCY_LEVEL_FILTER;
-    public wordCreate: Word = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High };
+    public readonly filterForm = new FormGroup({
+        search: new FormControl(''),
+        importancy: new FormControl(ImportancyFilter.All)
+    });
+
+    public readonly createForm = new FormGroup({
+        key: new FormControl(''),
+        value: new FormControl(''),
+        notes: new FormControl(''),
+        importancy: new FormControl(Importancy.High)
+    });
 
     private _currentEditionRow: Row | null = null;
 
@@ -75,18 +85,19 @@ export class ManageComponent implements AfterViewInit
     {
         this._store.dispatch(getWords({ search: '' }));
 
-        this.search$ = this._store.pipe(
-            select(selectSearch),
-            map(search => search.toLowerCase())
+        this.filter$ = this._store.pipe(
+            select(selectFilter)
         );
 
         this.words$ = this._store.pipe(
             select(selectWords),
-            withLatestFrom(this.search$),
-            map(([words, search]) =>
+            withLatestFrom(this.filter$),
+            tap(([words, filter]) =>
             {
                 this.dataSource.data = words
-                    .filter(word => word.key.toLowerCase().includes(search) || word.value.toLowerCase().includes(search))
+                    .filter(word => word.key.toLowerCase().includes(filter.search) || word.value.toLowerCase().includes(filter.search))
+                    .filter(word => this.isWordMatchingImportancyFilter(word, filter.importancy))
+                    .filter(word => word.importancy)
                     .map((word: Word, index: number) => ({
                         word,
                         referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
@@ -94,10 +105,8 @@ export class ManageComponent implements AfterViewInit
                         isModified: false
                     }));
                 this.dataSource._updateChangeSubscription();
-                this.wordCreate = { id: 0, key: '', value: '', notes: '', importancy: Importancy.High }
-
-                return words;
-            })
+            }),
+            map(([words, _]) => words)
         );
 
         this.isLoading$ = this._store.pipe(
@@ -107,21 +116,6 @@ export class ManageComponent implements AfterViewInit
 
     public ngAfterViewInit(): void
     {
-        this.initDataSource();
-    }
-
-    public initDataSource(): void
-    {
-        this.dataSource.filterPredicate = (row: Row, filtersString: string) =>
-        {
-            if (this._currentEditionRow)
-            {
-                this.onResetClick(this._currentEditionRow);
-            }
-            const filters: Filters = { search: JSON.parse(filtersString).search, importancy: JSON.parse(filtersString).importancy };
-            return (row.word.key.toLowerCase().includes(filters.search) || row.word.value.toLowerCase().includes(filters.search)) &&
-                this.isWordMatchingImportancyFilter(row.word, +filters.importancy);
-        };
         this.dataSource.sort = this.sort;
         this.dataSource.sortData = (data: Array<Row>, sort: MatSort) =>
         {
@@ -155,14 +149,20 @@ export class ManageComponent implements AfterViewInit
         this.dataSource.paginator = this.paginator;
     }
 
-    public onFilterChange(element: HTMLInputElement): void
+    public onFilterChange(): void
     {
-        this._store.dispatch(setSearch({ search: element.value }));
+        this._store.dispatch(setFilter({
+            search: this.filterForm.controls['search'].value.toLowerCase(),
+            importancy: this.filterForm.controls['importancy'].value
+        }));
     }
 
-    public onSearchClick(element: HTMLInputElement): void
+    public onSearchClick(): void
     {
-        this._store.dispatch(setSearch({ search: element.value }));
+        this._store.dispatch(setFilter({
+            search: this.filterForm.controls['search'].value.toLowerCase(),
+            importancy: this.filterForm.controls['importancy'].value
+        }));
     }
 
     public onResetClick(row: Row): void
@@ -177,7 +177,12 @@ export class ManageComponent implements AfterViewInit
 
     public onAddClick(): void
     {
-        this._store.dispatch(createWord({ word: this.wordCreate }));
+        const key = this.createForm.controls['key'].value;
+        const value = this.createForm.controls['value'].value;
+        const notes = this.createForm.controls['notes'].value;
+        const importancy = this.createForm.controls['importancy'].value;
+
+        this._store.dispatch(createWord({ word: { id: 0, key, value, notes, importancy } }));
         this.inputCreateKey?.nativeElement.focus();
     }
 
@@ -224,31 +229,42 @@ export class ManageComponent implements AfterViewInit
 
     public onClearSearchClick(): void
     {
-        this._store.dispatch(setSearch({ search: '' }))
-        this.importancy = DEFAULT_IMPORTANCY_LEVEL_FILTER;
+        this.filterForm.controls['search'].setValue('');
+        this.filterForm.controls['importancy'].setValue(ImportancyFilter.All);
+        this._store.dispatch(clearFilter());
     }
 
     public onClearAddClick(): void
     {
-        this.wordCreate.key = '';
-        this.wordCreate.value = '';
-        this.wordCreate.notes = '';
-        this.wordCreate.importancy = Importancy.High;
+        this.createForm.controls['key'].setValue('');
+        this.createForm.controls['value'].setValue('');
+        this.createForm.controls['notes'].setValue('');
+        this.createForm.controls['importancy'].setValue(Importancy.High);
     }
 
-    public isFiltersModified(search: string): boolean
+    public isFiltersModified(): boolean
     {
-        return search !== '' || this.importancy !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
+        const searchValue = this.filterForm.controls['search'].value.toLowerCase();
+        const importancyValue = this.filterForm.controls['importancy'].value;
+        return searchValue !== '' || importancyValue !== DEFAULT_IMPORTANCY_LEVEL_FILTER;
     }
 
     public isWordCreateModified(): boolean
     {
-        return this.wordCreate.key !== '' || this.wordCreate.value !== '' || this.wordCreate.notes !== '' || this.wordCreate.importancy !== Importancy.High;
+        const key = this.createForm.controls['key'].value;
+        const value = this.createForm.controls['value'].value;
+        const notes = this.createForm.controls['notes'].value;
+        const importancy = this.createForm.controls['importancy'].value;
+
+        return key !== '' || value !== '' || notes !== '' || importancy !== Importancy.High;
     }
 
     public isWordCreateValid(): boolean
     {
-        return this.wordCreate.key !== '' && this.wordCreate.value !== '';
+        const key = this.createForm.controls['key'].value;
+        const value = this.createForm.controls['value'].value;
+
+        return key !== '' && value !== '';
     }
 
     public isWordValid(word: Word): boolean
@@ -256,7 +272,7 @@ export class ManageComponent implements AfterViewInit
         return word.key !== '' && word.value !== '';
     }
 
-    public isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
+    private isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean
     {
         switch (referenceImportancy)
         {

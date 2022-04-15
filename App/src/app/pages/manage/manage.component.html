@@ -1,51 +1,55 @@
 <div fxLayout="row" fxLayoutAlign="space-between">
     <div fxLayout="row" fxLayoutAlign="start">
-        <mat-form-field class="spaced-field">
-            <mat-label>Search</mat-label>
-            <input #inputSearch matInput (input)="onFilterChange(inputSearch)" placeholder="search..."
-                spellcheck="false" autocomplete="off">
-        </mat-form-field>
-        <mat-form-field class="spaced-field">
-            <mat-label>Importancy</mat-label>
-            <mat-select [(ngModel)]="importancy" (ngModelChange)="onFilterChange(inputSearch)">
-                <mat-option *ngFor="let levelFilter of importancyLevelsFilters" [value]="levelFilter.value">
-                    {{levelFilter.text}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <button *ngIf="search$ | async as search" mat-button style="height: 40px; margin: 8px 10px 4px 20px;"
-            (click)="onClearSearchClick()" [disabled]="!isFiltersModified(search)">Clear</button>
-        <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
-            (click)="onSearchClick(inputSearch)" [disabled]="isLoading$ | async">Load data</button>
+        <form [formGroup]="filterForm">
+            <mat-form-field class="spaced-field">
+                <mat-label>Search</mat-label>
+                <input (input)="onFilterChange()" formControlName="search" matInput placeholder="search..."
+                    spellcheck="false" autocomplete="off">
+            </mat-form-field>
+            <mat-form-field class="spaced-field">
+                <mat-label>Importancy</mat-label>
+                <mat-select formControlName="importancy" (selectionChange)="onFilterChange()">
+                    <mat-option *ngFor="let levelFilter of importancyLevelsFilters" [value]="levelFilter.value">
+                        {{ levelFilter.text }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearSearchClick()"
+                [disabled]="!isFiltersModified()">Clear</button>
+            <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
+                (click)="onSearchClick()" [disabled]="isLoading$ | async">Load data</button>
+        </form>
     </div>
     <div fxLayout="row" fxLayoutAlign="end">
-        <mat-form-field class="spaced-field">
-            <mat-label>Key</mat-label>
-            <input matInput [(ngModel)]="wordCreate.key" (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                autocomplete="off" #inputCreateKey>
-        </mat-form-field>
-        <mat-form-field class="spaced-field">
-            <mat-label>Value</mat-label>
-            <input matInput [(ngModel)]="wordCreate.value" (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                autocomplete="off">
-        </mat-form-field>
-        <mat-form-field class="spaced-field">
-            <mat-label>Notes</mat-label>
-            <input matInput [(ngModel)]="wordCreate.notes" (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                autocomplete="off">
-        </mat-form-field>
-        <mat-form-field class="spaced-field">
-            <mat-label>Importancy</mat-label>
-            <mat-select [(ngModel)]="wordCreate.importancy">
-                <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
-                    {{level.text}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearAddClick()"
-            [disabled]="!isWordCreateModified()">Cancel</button>
-        <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px" (click)="onAddClick()"
-            [disabled]="!isWordCreateValid()">Add word</button>
+        <form [formGroup]="createForm">
+            <mat-form-field class="spaced-field">
+                <mat-label>Key</mat-label>
+                <input formControlName="key" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
+                    autocomplete="off" #inputCreateKey>
+            </mat-form-field>
+            <mat-form-field class="spaced-field">
+                <mat-label>Value</mat-label>
+                <input formControlName="value" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
+                    autocomplete="off">
+            </mat-form-field>
+            <mat-form-field class="spaced-field">
+                <mat-label>Notes</mat-label>
+                <input formControlName="notes" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
+                    autocomplete="off">
+            </mat-form-field>
+            <mat-form-field class="spaced-field">
+                <mat-label>Importancy</mat-label>
+                <mat-select formControlName="importancy">
+                    <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
+                        {{ level.text }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearAddClick()"
+                [disabled]="!isWordCreateModified()">Cancel</button>
+            <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px"
+                (click)="onAddClick()" [disabled]="!isWordCreateValid()">Add word</button>
+        </form>
     </div>
 </div>
 <div class="table-container mat-elevation-z8" style="margin-top: 10px;">
@@ -88,7 +92,7 @@
                         [ngClass]="{ 'text-edition': row.isModified}" color="accent">
                         <mat-option *ngFor="let level of importancyLevels" [value]="level.value"
                             [ngClass]="{ 'text-edition': row.isModified}" color="accent">
-                            {{level.text}}
+                            {{ level.text }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -114,4 +118,6 @@
     </table>
     <mat-paginator [pageSizeOptions]="[10, 15, 20, 30]" showFirstLastButtons class="paginator-sticky"></mat-paginator>
 </div>
+
 <ng-container *ngIf="words$ | async"></ng-container>
+<ng-container *ngIf="filter$ | async"></ng-container>
