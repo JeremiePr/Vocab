@@ -4,3 +4,7 @@ export const filterNil = () => <T>(source$: Observable<T>): Observable<NonNullab
     filter(x => !!x),
     map(x => x!)
 );
+
+export const filterEmptyArray = () => <T>(source$: Observable<Array<T>>): Observable<Array<T>> => source$.pipe(
+    filter(x => x.length > 0)
+);

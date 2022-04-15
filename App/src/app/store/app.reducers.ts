@@ -3,7 +3,7 @@ import { ImportancyFilter } from 'src/app/models/importancy-filter';
 import * as fromActions from 'src/app/store/app.actions';
 import { AppState } from 'src/app/store/app.state';
 
-export const initialState: AppState =
+const initialState: AppState =
 {
     words: [],
     filter: {

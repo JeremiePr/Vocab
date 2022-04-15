@@ -9,7 +9,8 @@
             <mat-form-field class="spaced-field">
                 <mat-label>Importancy</mat-label>
                 <mat-select formControlName="importancy" (selectionChange)="onFilterChange()">
-                    <mat-option *ngFor="let levelFilter of importancyLevelsFilters" [value]="levelFilter.value">
+                    <mat-option *ngFor="let levelFilter of importancyLevelsFilters$ | async"
+                        [value]="levelFilter.value">
                         {{ levelFilter.text }}
                     </mat-option>
                 </mat-select>
@@ -40,7 +41,7 @@
             <mat-form-field class="spaced-field">
                 <mat-label>Importancy</mat-label>
                 <mat-select formControlName="importancy">
-                    <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
+                    <mat-option *ngFor="let level of importancyLevels$ | async" [value]="level.value">
                         {{ level.text }}
                     </mat-option>
                 </mat-select>
@@ -90,7 +91,7 @@
                 <mat-form-field>
                     <mat-select [(ngModel)]="row.word.importancy" (ngModelChange)="onRowChange(row)"
                         [ngClass]="{ 'text-edition': row.isModified}" color="accent">
-                        <mat-option *ngFor="let level of importancyLevels" [value]="level.value"
+                        <mat-option *ngFor="let level of importancyLevels$ | async" [value]="level.value"
                             [ngClass]="{ 'text-edition': row.isModified}" color="accent">
                             {{ level.text }}
                         </mat-option>
@@ -110,8 +111,8 @@
                 </div>
             </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let word; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns$ | async; sticky: true"></tr>
+        <tr mat-row *matRowDef="let word; columns: displayedColumns$ | async;"></tr>
         <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell hint-info" colspan="4">No data</td>
         </tr>
