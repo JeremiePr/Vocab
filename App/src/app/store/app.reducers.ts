@@ -1,18 +1,22 @@
 import { createReducer, on } from '@ngrx/store';
+import { ImportancyFilter } from 'src/app/models/importancy-filter';
 import * as fromActions from 'src/app/store/app.actions';
 import { AppState } from 'src/app/store/app.state';
 
 export const initialState: AppState =
 {
     words: [],
-    search: '',
+    filter: {
+        search: '',
+        importancy: ImportancyFilter.All
+    },
     isLoading: false,
     error: null
 };
 
 export const appReducer = createReducer(
     initialState,
-    on(fromActions.getWords, (state, __) => ({
+    on(fromActions.getWords, (state, _) => ({
         ...state,
         isLoading: true,
         error: null
@@ -27,12 +31,12 @@ export const appReducer = createReducer(
         isLoading: false,
         error: action.error
     })),
-    on(fromActions.getOneWordById, (state, __) => ({
+    on(fromActions.getOneWordById, (state, _) => ({
         ...state,
         isLoading: true,
         error: null
     })),
-    on(fromActions.getOneWordByIdSuccess, (state, __) => ({
+    on(fromActions.getOneWordByIdSuccess, (state, _) => ({
         ...state,
         isLoading: false
     })),
@@ -41,7 +45,7 @@ export const appReducer = createReducer(
         isLoading: false,
         error: action.error
     })),
-    on(fromActions.createWord, (state, __) => ({
+    on(fromActions.createWord, (state, _) => ({
         ...state,
         isLoading: true,
         error: null
@@ -56,7 +60,7 @@ export const appReducer = createReducer(
         isLoading: false,
         error: action.error
     })),
-    on(fromActions.updateWord, (state, __) => ({
+    on(fromActions.updateWord, (state, _) => ({
         ...state,
         isLoading: true,
         error: null
@@ -71,7 +75,7 @@ export const appReducer = createReducer(
         isLoading: false,
         error: action.error
     })),
-    on(fromActions.deleteWord, (state, __) => ({
+    on(fromActions.deleteWord, (state, _) => ({
         ...state,
         isLoading: true,
         error: null
@@ -86,9 +90,18 @@ export const appReducer = createReducer(
         isLoading: false,
         error: action.error
     })),
-    on(fromActions.setSearch, (state, action) => ({
+    on(fromActions.setFilter, (state, action) => ({
         ...state,
-        search: action.search,
+        filter: {
+            ...state.filter,
+            search: action.search,
+            importancy: action.importancy
+        },
+        words: [...state.words]
+    })),
+    on(fromActions.clearFilter, (state, _) => ({
+        ...state,
+        filter: { ...initialState.filter },
         words: [...state.words]
     })),
     on(fromActions.clear, (state, __) => ({

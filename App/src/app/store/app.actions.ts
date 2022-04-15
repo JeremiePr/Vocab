@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ProgressBarMode } from '@angular/material/progress-bar';
 import { createAction, props } from '@ngrx/store';
+import { ImportancyFilter } from 'src/app/models/importancy-filter';
 import { Word } from 'src/app/models/word';
 
 const actionPrefix = '[App]';
@@ -80,9 +80,13 @@ export const deleteWordFailure = createAction(
     props<{ error: HttpErrorResponse }>()
 );
 
-export const setSearch = createAction(
-    `${actionPrefix} Set Search`,
-    props<{ search: string }>()
+export const setFilter = createAction(
+    `${actionPrefix} Set Filter`,
+    props<{ search: string, importancy: ImportancyFilter }>()
+);
+
+export const clearFilter = createAction(
+    `${actionPrefix} Clear Filter`
 );
 
 export const clear = createAction(

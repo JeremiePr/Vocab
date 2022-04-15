@@ -8,9 +8,9 @@ export const selectWords = createSelector(
     (state: AppState) => state.words
 );
 
-export const selectSearch = createSelector(
+export const selectFilter = createSelector(
     selectState,
-    (state: AppState) => state.search
+    (state: AppState) => state.filter
 );
 
 export const selectIsLoading = createSelector(
