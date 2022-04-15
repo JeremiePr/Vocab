@@ -1,5 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, Renderer2 } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { getWords } from 'src/app/store/app.actions';
+import { AppState } from 'src/app/store/app.state';
 import { UiService } from './services/ui.service';
 
 @Component({
@@ -9,8 +12,13 @@ import { UiService } from './services/ui.service';
 })
 export class AppComponent
 {
-    constructor(@Inject(DOCUMENT) private document: Document, private renderer: Renderer2, private uiService: UiService)
+    constructor(
+        appStore: Store<AppState>,
+        @Inject(DOCUMENT) document: Document,
+        renderer: Renderer2,
+        uiService: UiService)
     {
-        this.uiService.initialize(this.document, this.renderer);
+        appStore.dispatch(getWords({ search: '' }));
+        uiService.initialize(document, renderer);
     }
 }
