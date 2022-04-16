@@ -45,6 +45,8 @@ export class ManageComponent implements AfterViewInit
         private readonly _appStore: Store<AppState>,
         private readonly _componentStore: ManageStore)
     {
+        this._appStore.dispatch(getWords({ search: '' }));
+
         this.filterForm = new FormGroup({
             search: new FormControl(''),
             importancy: new FormControl(ImportancyFilter.All)
@@ -209,45 +211,58 @@ export class ManageComponent implements AfterViewInit
 
     private initializeDataSource(): void
     {
+        this.dataSource.filterPredicate = this.filterDataSourceFn.bind(this);
+        this.dataSource.sortData = this.sortDataSourceFn.bind(this);
         this.dataSource.sort = this.sort;
-        this.dataSource.sortData = (data: Array<Row>, sort: MatSort) =>
-        {
-            let compareValue = 0;
-            let column = sort.active;
-            switch (sort.direction)
-            {
-                case 'asc':
-                    compareValue = 1;
-                    break;
-                case 'desc':
-                    compareValue = -1;
-                    break;
-                default:
-                    column = 'importancy';
-                    compareValue = -1;
-                    break;
-            }
-            switch (column)
-            {
-                case 'key':
-                    return data.sort((a, b) => a.word.key.toLowerCase() > b.word.key.toLowerCase() ? compareValue : -compareValue);
-                case 'value':
-                    return data.sort((a, b) => a.word.value.toLowerCase() > b.word.value.toLowerCase() ? compareValue : -compareValue);
-                case 'importancy':
-                    return data.sort((a, b) => a.word.importancy > b.word.importancy ? compareValue : -compareValue);
-                default:
-                    return data;
-            }
-        }
         this.dataSource.paginator = this.paginator;
+    }
+
+    private filterDataSourceFn(row: Row, filtersString: string): boolean
+    {
+        if (this._currentEditionRow) this.onResetClick(this._currentEditionRow);
+
+        const filters: Filter = { search: JSON.parse(filtersString).search, importancy: JSON.parse(filtersString).importancy };
+
+        return (row.word.key.toLowerCase().includes(filters.search) || row.word.value.toLowerCase().includes(filters.search)) &&
+            this.isWordMatchingImportancyFilter(row.word, +filters.importancy);
+    }
+
+    private sortDataSourceFn(data: Array<Row>, sort: MatSort): Array<Row>
+    {
+        let compareValue = 0;
+        let column = sort.active;
+        switch (sort.direction)
+        {
+            case 'asc':
+                compareValue = 1;
+                break;
+            case 'desc':
+                compareValue = -1;
+                break;
+            default:
+                column = 'importancy';
+                compareValue = -1;
+                break;
+        }
+        switch (column)
+        {
+            case 'key':
+                return data.sort((a, b) => a.word.key.toLowerCase() > b.word.key.toLowerCase() ? compareValue : -compareValue);
+            case 'value':
+                return data.sort((a, b) => a.word.value.toLowerCase() > b.word.value.toLowerCase() ? compareValue : -compareValue);
+            case 'importancy':
+                return data.sort((a, b) => a.word.importancy > b.word.importancy ? compareValue : -compareValue);
+            default:
+                return data;
+        }
     }
 
     private buildDataSource(words: ReadonlyArray<Word>, filter: Filter): void
     {
         this.dataSource.data = words
-            .filter(word => word.key.toLowerCase().includes(filter.search) || word.value.toLowerCase().includes(filter.search))
-            .filter(word => this.isWordMatchingImportancyFilter(word, filter.importancy))
-            .filter(word => word.importancy)
+            // .filter(word => word.key.toLowerCase().includes(filter.search) || word.value.toLowerCase().includes(filter.search))
+            // .filter(word => this.isWordMatchingImportancyFilter(word, filter.importancy))
+            // .filter(word => word.importancy)
             .map((word: Word, index: number) => ({
                 word,
                 referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },
@@ -255,6 +270,8 @@ export class ManageComponent implements AfterViewInit
                 isModified: false
             }));
         this.dataSource._updateChangeSubscription();
+        this.dataSource.filter = JSON.stringify(filter);
+        this.dataSource.paginator?.firstPage();
     }
 
     private isWordMatchingImportancyFilter(word: Word, referenceImportancy: ImportancyFilter): boolean

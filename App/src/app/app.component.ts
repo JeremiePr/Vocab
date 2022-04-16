@@ -13,12 +13,10 @@ import { UiService } from './services/ui.service';
 export class AppComponent
 {
     constructor(
-        appStore: Store<AppState>,
         @Inject(DOCUMENT) document: Document,
         renderer: Renderer2,
         uiService: UiService)
     {
-        appStore.dispatch(getWords({ search: '' }));
         uiService.initialize(document, renderer);
     }
 }
