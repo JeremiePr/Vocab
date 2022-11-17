@@ -1,31 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Vocab.Api.Models;
+﻿using Api.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Vocab.Api.Data.Context
+namespace Api.Data.Context;
+
+public class VocabContext : DbContext
 {
-    public class VocabContext : DbContext
+    public VocabContext(DbContextOptions<VocabContext> options) : base(options) { }
+
+    public DbSet<Word> Words { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        public VocabContext(DbContextOptions<VocabContext> options): base(options) { }
-
-        public DbSet<Word> Words { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder builder)
+        builder.Entity<Word>(entity =>
         {
-            builder.Entity<Word>(entity =>
-            {
-                entity.ToTable("Word");
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("Id");
-                entity.Property(e => e.Key).HasColumnName("KeyWord");
-                entity.Property(e => e.Value).HasColumnName("ValueWord");
-                entity.Property(e => e.Notes).HasColumnName("Notes");
-                entity.Property(e => e.Importancy).HasColumnName("Importancy");
-                entity.Property(e => e.IsActive).HasColumnName("IsActive");
-                entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
-                entity.Property(e => e.UpdateDate).HasColumnName("UpdateDate");
-            });
+            entity.ToTable("Word");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Key).HasColumnName("key_word");
+            entity.Property(e => e.Value).HasColumnName("value_word");
+            entity.Property(e => e.Notes).HasColumnName("notes");
+            entity.Property(e => e.Importancy).HasColumnName("importancy");
+            entity.Property(e => e.IsActive).HasColumnName("is_active");
+            entity.Property(e => e.CreateDate).HasColumnName("create_date");
+            entity.Property(e => e.UpdateDate).HasColumnName("update_date");
+        });
 
-            base.OnModelCreating(builder);
-        }
+        base.OnModelCreating(builder);
     }
 }

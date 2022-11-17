@@ -1,50 +1,45 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Vocab.Api.Data;
-using Vocab.Api.Models;
+﻿using Api.Data;
+using Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Vocab.Api.Controllers
+namespace Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class WordController : ControllerBase
 {
-    [ApiController]
-    [Route("api/v2/[controller]")]
-    public class WordController : ControllerBase
+    private readonly IWordRepository _repository;
+
+    public WordController(IWordRepository repository) => _repository = repository;
+
+    [HttpGet]
+    public async Task<ActionResult> Get(string? search)
     {
-        private readonly IWordRepository _repository;
+        return Ok(await _repository.Get(search ?? string.Empty));
+    }
 
-        public WordController(IWordRepository repository)
-        {
-            _repository = repository;
-        }
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetOneById(int id)
+    {
+        return Ok(await _repository.GetOneById(id));
+    }
 
-        [HttpGet]
-        public async Task<ActionResult> Get(string search)
-        {
-            return Ok(await _repository.Get(search));
-        }
+    [HttpPost]
+    public async Task<ActionResult> Create([FromBody] Word word)
+    {
+        return Ok(await _repository.Create(word));
+    }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetOneById(int id)
-        {
-            return Ok(await _repository.GetOneById(id));
-        }
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] Word word)
+    {
+        return Ok(await _repository.Update(word));
+    }
 
-        [HttpPost]
-        public async Task<ActionResult> Create([FromBody]Word word)
-        {
-            return Ok(await _repository.Create(word));
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> Update([FromBody]Word word)
-        {
-            return Ok(await _repository.Update(word));
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult> Delete(int id)
-        {
-            await _repository.Delete(id);
-            return NoContent();
-        }
+    [HttpDelete]
+    public async Task<ActionResult> Delete(int id)
+    {
+        await _repository.Delete(id);
+        return NoContent();
     }
 }

@@ -1,26 +1,47 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Api.Data;
+using Api.Data.Context;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
-namespace Vocab.Api
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("VocabConnectionString");
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<VocabContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddTransient<IWordRepository, WordRepository>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+    var dbOriginalUri = new SqliteConnectionStringBuilder(connectionString).DataSource;
+    var dbDirectory = Path.GetDirectoryName(dbOriginalUri);
+    var dbName = builder.Configuration.GetValue<string>("DatabaseName");
+    var dbExtension = Path.GetExtension(dbOriginalUri);
+
+    if (dbDirectory is null || dbName is null || dbExtension is null)
+        throw new Exception("Invalid database configuration");
+
+    File.Copy(Path.Combine(dbDirectory, $"{dbName}{dbExtension}"), Path.Combine(dbDirectory, $"{dbName}_dev{dbExtension}"), true);
 }
+
+app.UseAuthorization();
+
+app.UseCors(builder =>
+{
+    builder
+        .SetIsOriginAllowed(_ => true)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+});
+
+app.MapControllers();
+
+app.Run();
