@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vocab.Api", "Api\Vocab.Api.csproj", "{02E030CF-CAEC-4A38-890D-B1F28CBB50AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{82EA2780-3C35-47E2-B1E7-35E1C05F1548}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02E030CF-CAEC-4A38-890D-B1F28CBB50AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02E030CF-CAEC-4A38-890D-B1F28CBB50AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02E030CF-CAEC-4A38-890D-B1F28CBB50AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02E030CF-CAEC-4A38-890D-B1F28CBB50AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82EA2780-3C35-47E2-B1E7-35E1C05F1548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82EA2780-3C35-47E2-B1E7-35E1C05F1548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82EA2780-3C35-47E2-B1E7-35E1C05F1548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82EA2780-3C35-47E2-B1E7-35E1C05F1548}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
