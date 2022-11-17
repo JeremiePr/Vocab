@@ -363,6 +363,7 @@ FodyWeavers.xsd
 
 # Angular
 .angular
+dist
 
 # VSCode
 .vscode
