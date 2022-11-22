@@ -94,7 +94,7 @@ export class ManageComponent implements AfterViewInit
         }));
     }
 
-    public onSearchClick(): void
+    public onSearchSubmit(): void
     {
         this._appStore.dispatch(setFilter({
             search: this.filterForm.controls['search'].value.toLowerCase(),
@@ -112,7 +112,7 @@ export class ManageComponent implements AfterViewInit
         this._currentEditionRow = null;
     }
 
-    public onAddClick(): void
+    public onAddSubmit(): void
     {
         const key = this.createForm.controls['key'].value;
         const value = this.createForm.controls['value'].value;
@@ -121,14 +121,7 @@ export class ManageComponent implements AfterViewInit
 
         this._appStore.dispatch(createWord({ word: { id: 0, key, value, notes, importancy } }));
         this.inputCreateKey?.nativeElement.focus();
-    }
-
-    public onEnterAddKeyPress(): void
-    {
-        if (this.isWordCreateValid())
-        {
-            this.onAddClick();
-        }
+        this.createForm.reset();
     }
 
     public onSaveClick(row: Row): void
@@ -260,9 +253,6 @@ export class ManageComponent implements AfterViewInit
     private buildDataSource(words: ReadonlyArray<Word>, filter: Filter): void
     {
         this.dataSource.data = words
-            // .filter(word => word.key.toLowerCase().includes(filter.search) || word.value.toLowerCase().includes(filter.search))
-            // .filter(word => this.isWordMatchingImportancyFilter(word, filter.importancy))
-            // .filter(word => word.importancy)
             .map((word: Word, index: number) => ({
                 word,
                 referenceFields: { key: word.key, value: word.value, notes: word.notes, importancy: word.importancy },

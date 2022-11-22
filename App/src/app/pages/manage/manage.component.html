@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="space-between">
     <div fxLayout="row" fxLayoutAlign="start">
-        <form [formGroup]="filterForm">
+        <form [formGroup]="filterForm" (ngSubmit)="onSearchSubmit()">
             <mat-form-field class="spaced-field">
                 <mat-label>Search</mat-label>
                 <input (input)="onFilterChange()" formControlName="search" matInput placeholder="search..."
@@ -16,27 +16,24 @@
                 </mat-select>
             </mat-form-field>
             <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearSearchClick()"
-                [disabled]="!isFiltersModified()">Clear</button>
-            <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;"
-                (click)="onSearchClick()" [disabled]="isLoading$ | async">Load data</button>
+                type="button" [disabled]="!isFiltersModified()">Clear</button>
+            <button mat-raised-button color="basic" style="height: 40px; margin: 8px 10px 4px 20px;" type="submit"
+                [disabled]="isLoading$ | async">Load data</button>
         </form>
     </div>
     <div fxLayout="row" fxLayoutAlign="end">
-        <form [formGroup]="createForm">
+        <form [formGroup]="createForm" (ngSubmit)="onAddSubmit()">
             <mat-form-field class="spaced-field">
                 <mat-label>Key</mat-label>
-                <input formControlName="key" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                    autocomplete="off" #inputCreateKey>
+                <input formControlName="key" matInput spellcheck="false" autocomplete="off" #inputCreateKey>
             </mat-form-field>
             <mat-form-field class="spaced-field">
                 <mat-label>Value</mat-label>
-                <input formControlName="value" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                    autocomplete="off">
+                <input formControlName="value" matInput spellcheck="false" autocomplete="off">
             </mat-form-field>
             <mat-form-field class="spaced-field">
                 <mat-label>Notes</mat-label>
-                <input formControlName="notes" matInput (keyup.enter)="onEnterAddKeyPress()" spellcheck="false"
-                    autocomplete="off">
+                <input formControlName="notes" matInput spellcheck="false" autocomplete="off">
             </mat-form-field>
             <mat-form-field class="spaced-field">
                 <mat-label>Importancy</mat-label>
@@ -47,9 +44,9 @@
                 </mat-select>
             </mat-form-field>
             <button mat-button style="height: 40px; margin: 8px 10px 4px 20px;" (click)="onClearAddClick()"
-                [disabled]="!isWordCreateModified()">Cancel</button>
-            <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px"
-                (click)="onAddClick()" [disabled]="!isWordCreateValid()">Add word</button>
+                type="button" [disabled]="!isWordCreateModified()">Cancel</button>
+            <button mat-raised-button color="primary" style="height: 40px; margin: 8px 0 4px 20px" type="submit"
+                [disabled]="!isWordCreateValid()">Add word</button>
         </form>
     </div>
 </div>
