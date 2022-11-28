@@ -8,13 +8,16 @@
             </h4>
             <div style="height: 10px;"></div>
             <div>
-                <button class="reveal-button" *ngIf="!isGameItemRevealed" mat-button (click)="isGameItemRevealed = true">Reveal</button>
-                <button class="reveal-button" *ngIf="isGameItemRevealed" mat-button (click)="isGameItemRevealed = false">Hide</button>
+                <button class="reveal-button" *ngIf="!isGameItemRevealed" mat-button
+                    (click)="isGameItemRevealed = true">Reveal</button>
+                <button class="reveal-button" *ngIf="isGameItemRevealed" mat-button
+                    (click)="isGameItemRevealed = false">Hide</button>
             </div>
             <div style="height: 40px;"></div>
             <mat-form-field appearance="fill">
                 <mat-label>set importancy</mat-label>
-                <mat-select [(ngModel)]="gameItems[currentGameItemIndex].importancy" (ngModelChange)="onWordImportancyChange(gameItems[currentGameItemIndex])">
+                <mat-select [(ngModel)]="gameItems[currentGameItemIndex].importancy"
+                    (ngModelChange)="onWordImportancyChange(gameItems[currentGameItemIndex])">
                     <mat-option *ngFor="let level of importancyLevels" [value]="level.value">
                         {{level.text}}
                     </mat-option>
@@ -47,7 +50,8 @@
             <div class="form-container">
                 <mat-form-field appearance="fill">
                     <mat-label>Importancy</mat-label>
-                    <mat-select [(ngModel)]="selectedImportancy" (ngModelChange)="onSelectedImportancyChange()" [disabled]="isGameStarted">
+                    <mat-select [(ngModel)]="selectedImportancy" (ngModelChange)="onSelectedImportancyChange()"
+                        [disabled]="isGameStarted">
                         <mat-option *ngFor="let level of importancyLevelsFilters" [value]="level.value">
                             {{level.text}}
                         </mat-option>
@@ -66,7 +70,8 @@
             </div>
             <div style="height: 30px;"></div>
             <div class="form-container">
-                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()" [disabled]="isGameStarted || wordCount === 0">Play with {{wordCount}} words</button>
+                <button class="play-button" mat-raised-button color="primary" (click)="onPlayClick()"
+                    [disabled]="isGameStarted || wordCount === 0">Play with {{wordCount}} words</button>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -36,8 +36,8 @@ export class ManageComponent implements AfterViewInit
     public readonly importancyLevelsFilters$: Observable<Array<ValueText>>;
 
     public readonly dataSource = new MatTableDataSource<Row>();
-    public readonly filterForm: FormGroup;
-    public readonly createForm: FormGroup;
+    public readonly filterForm: UntypedFormGroup;
+    public readonly createForm: UntypedFormGroup;
 
     private _currentEditionRow: Row | null = null;
 
@@ -47,16 +47,16 @@ export class ManageComponent implements AfterViewInit
     {
         this._appStore.dispatch(getWords({ search: '' }));
 
-        this.filterForm = new FormGroup({
-            search: new FormControl(''),
-            importancy: new FormControl(ImportancyFilter.All)
+        this.filterForm = new UntypedFormGroup({
+            search: new UntypedFormControl(''),
+            importancy: new UntypedFormControl(ImportancyFilter.All)
         });
 
-        this.createForm = new FormGroup({
-            key: new FormControl(''),
-            value: new FormControl(''),
-            notes: new FormControl(''),
-            importancy: new FormControl(Importancy.High)
+        this.createForm = new UntypedFormGroup({
+            key: new UntypedFormControl(''),
+            value: new UntypedFormControl(''),
+            notes: new UntypedFormControl(''),
+            importancy: new UntypedFormControl(Importancy.High)
         });
 
         this.filter$ = this._appStore.pipe(
