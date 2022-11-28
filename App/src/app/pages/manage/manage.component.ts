@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,6 +15,20 @@ import { AppState } from 'src/app/store/app.state';
 import { Importancy } from '../../models/importancy';
 import { ImportancyFilter } from '../../models/importancy-filter';
 import { Word } from '../../models/word';
+
+interface FilterFormDefinition
+{
+    search: FormControl<string>;
+    importancy: FormControl<ImportancyFilter>;
+}
+
+interface AddFormDefinition
+{
+    key: FormControl<string>;
+    value: FormControl<string>;
+    notes: FormControl<string>;
+    importancy: FormControl<Importancy>;
+}
 
 @Component({
     selector: 'app-manage',
@@ -36,8 +50,8 @@ export class ManageComponent implements AfterViewInit
     public readonly importancyLevelsFilters$: Observable<Array<ValueText>>;
 
     public readonly dataSource = new MatTableDataSource<Row>();
-    public readonly filterForm: UntypedFormGroup;
-    public readonly createForm: UntypedFormGroup;
+    public readonly filterForm: FormGroup<FilterFormDefinition>;
+    public readonly createForm: FormGroup<AddFormDefinition>;
 
     private _currentEditionRow: Row | null = null;
 
@@ -47,16 +61,16 @@ export class ManageComponent implements AfterViewInit
     {
         this._appStore.dispatch(getWords({ search: '' }));
 
-        this.filterForm = new UntypedFormGroup({
-            search: new UntypedFormControl(''),
-            importancy: new UntypedFormControl(ImportancyFilter.All)
+        this.filterForm = new FormGroup<FilterFormDefinition>({
+            search: new FormControl<string>('', { nonNullable: true }),
+            importancy: new FormControl<ImportancyFilter>(ImportancyFilter.All, { nonNullable: true })
         });
 
-        this.createForm = new UntypedFormGroup({
-            key: new UntypedFormControl(''),
-            value: new UntypedFormControl(''),
-            notes: new UntypedFormControl(''),
-            importancy: new UntypedFormControl(Importancy.High)
+        this.createForm = new FormGroup<AddFormDefinition>({
+            key: new FormControl<string>('', { nonNullable: true }),
+            value: new FormControl<string>('', { nonNullable: true }),
+            notes: new FormControl<string>('', { nonNullable: true }),
+            importancy: new FormControl<Importancy>(Importancy.High, { nonNullable: true })
         });
 
         this.filter$ = this._appStore.pipe(
@@ -89,16 +103,16 @@ export class ManageComponent implements AfterViewInit
     public onFilterChange(): void
     {
         this._appStore.dispatch(setFilter({
-            search: this.filterForm.controls['search'].value.toLowerCase(),
-            importancy: this.filterForm.controls['importancy'].value
+            search: this.filterForm.controls.search.value.toLowerCase(),
+            importancy: this.filterForm.controls.importancy.value
         }));
     }
 
     public onSearchSubmit(): void
     {
         this._appStore.dispatch(setFilter({
-            search: this.filterForm.controls['search'].value.toLowerCase(),
-            importancy: this.filterForm.controls['importancy'].value
+            search: this.filterForm.controls.search.value.toLowerCase(),
+            importancy: this.filterForm.controls.importancy.value
         }));
     }
 
@@ -114,17 +128,17 @@ export class ManageComponent implements AfterViewInit
 
     public onAddSubmit(): void
     {
-        const key = this.createForm.controls['key'].value;
-        const value = this.createForm.controls['value'].value;
-        const notes = this.createForm.controls['notes'].value;
-        const importancy = this.createForm.controls['importancy'].value;
+        const key = this.createForm.controls.key.value;
+        const value = this.createForm.controls.value.value;
+        const notes = this.createForm.controls.notes.value;
+        const importancy = this.createForm.controls.importancy.value;
 
         this._appStore.dispatch(createWord({ word: { id: 0, key, value, notes, importancy } }));
         this.inputCreateKey?.nativeElement.focus();
-        this.createForm.controls['key'].setValue('');
-        this.createForm.controls['value'].setValue('');
-        this.createForm.controls['notes'].setValue('');
-        this.createForm.controls['importancy'].setValue(Importancy.High);
+        this.createForm.controls.key.setValue('');
+        this.createForm.controls.value.setValue('');
+        this.createForm.controls.notes.setValue('');
+        this.createForm.controls.importancy.setValue(Importancy.High);
     }
 
     public onSaveClick(row: Row): void
@@ -162,40 +176,40 @@ export class ManageComponent implements AfterViewInit
 
     public onClearSearchClick(): void
     {
-        this.filterForm.controls['search'].setValue('');
-        this.filterForm.controls['importancy'].setValue(ImportancyFilter.All);
+        this.filterForm.controls.search.setValue('');
+        this.filterForm.controls.importancy.setValue(ImportancyFilter.All);
         this._appStore.dispatch(clearFilter());
     }
 
     public onClearAddClick(): void
     {
-        this.createForm.controls['key'].setValue('');
-        this.createForm.controls['value'].setValue('');
-        this.createForm.controls['notes'].setValue('');
-        this.createForm.controls['importancy'].setValue(Importancy.High);
+        this.createForm.controls.key.setValue('');
+        this.createForm.controls.value.setValue('');
+        this.createForm.controls.notes.setValue('');
+        this.createForm.controls.importancy.setValue(Importancy.High);
     }
 
     public isFiltersModified(): boolean
     {
-        const searchValue = this.filterForm.controls['search'].value.toLowerCase();
-        const importancyValue = this.filterForm.controls['importancy'].value;
+        const searchValue = this.filterForm.controls.search.value.toLowerCase();
+        const importancyValue = this.filterForm.controls.importancy.value;
         return searchValue !== '' || importancyValue !== ImportancyFilter.All;
     }
 
     public isWordCreateModified(): boolean
     {
-        const key = this.createForm.controls['key'].value;
-        const value = this.createForm.controls['value'].value;
-        const notes = this.createForm.controls['notes'].value;
-        const importancy = this.createForm.controls['importancy'].value;
+        const key = this.createForm.controls.key.value;
+        const value = this.createForm.controls.value.value;
+        const notes = this.createForm.controls.notes.value;
+        const importancy = this.createForm.controls.importancy.value;
 
         return key !== '' || value !== '' || notes !== '' || importancy !== Importancy.High;
     }
 
     public isWordCreateValid(): boolean
     {
-        const key = this.createForm.controls['key'].value;
-        const value = this.createForm.controls['value'].value;
+        const key = this.createForm.controls.key.value;
+        const value = this.createForm.controls.value.value;
 
         return key !== '' && value !== '';
     }
