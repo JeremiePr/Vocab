@@ -121,7 +121,10 @@ export class ManageComponent implements AfterViewInit
 
         this._appStore.dispatch(createWord({ word: { id: 0, key, value, notes, importancy } }));
         this.inputCreateKey?.nativeElement.focus();
-        this.createForm.reset();
+        this.createForm.controls['key'].setValue('');
+        this.createForm.controls['value'].setValue('');
+        this.createForm.controls['notes'].setValue('');
+        this.createForm.controls['importancy'].setValue(Importancy.High);
     }
 
     public onSaveClick(row: Row): void
